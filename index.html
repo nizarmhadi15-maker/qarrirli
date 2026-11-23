@@ -766,7 +766,7 @@ function flist(){const l=ALL.filter(x=>(fkind==="a"||x.k===fkind)&&gv(x).every((
  $("#flist").innerHTML=`<div class="res-head"><h2>${l.length?l.length+" عمل يناسب بيتك":"ما في أعمال بهذه الشروط"}</h2></div>${l.length?`<div class="tickets">${l.map(x=>fcard(x,false)).join("")}</div>`:'<div class="empty">خفّف شرطًا واحدًا وجرّب مرة ثانية.</div>'}`}
 function fone(){const q=$("#fq").value.trim(),x=findT(q);if(!q){$("#fone").innerHTML="";return}
  if(!x){$("#fone").innerHTML=`<div class="empty" style="margin-top:14px">ما لقينا "${esc(q)}" في قائمتنا الحالية.</div>`;return}
- const v=gv(x),mx=Math.max(...v);const verdictTxt=mx===0?"✅ نظيف تمامًا ويناسب كل العائلة":mx===1?"🟡 يناسب العائلة غالبًا، فيه أشياء خفيفة":mx===2?"🟠 انتبه: فيه محتوى متوسط، شوف التفاصيل قبل الأطفال":"🔴 لا يناسب الأطفال";
+ const v=gv(x),mx=Math.max(...v);const verdictTxt=x.f===2?(mx===0?"✅ نظيف تمامًا ويناسب كل العائلة":"✅ يناسب كل العائلة، وفيه أشياء خفيفة"):x.f===1?"🟡 للمراهقين فما فوق؛ شوف التفاصيل قبل الأطفال":"🔴 للكبار فقط، لا يناسب الأطفال";
  $("#fone").innerHTML=`<p style="font-weight:700;font-size:18px;margin:16px 0 10px">${verdictTxt}</p><div class="tickets">${fcard(x,true)}</div>`}
 $("#fgo").onclick=fone;$("#fq").addEventListener("keydown",e=>{if(e.key==="Enter")fone()});
 flist();
