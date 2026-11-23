@@ -77,7 +77,7 @@ const e=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"
 (async()=>{try{const id=170833;if(!id)throw 0;
 const[d,p,v]=await Promise.all([q("/movie/"+id,{language:"ar"}),q("/movie/"+id+"/watch/providers"),q("/movie/"+id+"/videos",{include_video_language:"ar,en,null"})]);
 document.getElementById("ov").textContent=d.overview||"لا يوجد ملخص عربي لهذا العمل بعد.";
-const vs=(v.results||[]).filter(z=>z.site==="YouTube"&&/Trailer|Teaser/.test(z.type)).sort((a,b)=>((b.type==="Trailer")*4+(b.official?2:0)+(b.iso_639_1==="ar"?3:b.iso_639_1==="en"?1:0))-((a.type==="Trailer")*4+(a.official?2:0)+(a.iso_639_1==="ar"?3:a.iso_639_1==="en"?1:0)))[0];
+const vs=(v.results||[]).filter(z=>z.site==="YouTube"&&/Trailer|Teaser/.test(z.type)&&!/fan|concept|parody|reaction/i.test(z.name||"")).sort((a,b)=>((b.official?10:0)+(b.type==="Trailer")*4+(b.iso_639_1==="ar"?3:b.iso_639_1==="en"?1:0))-((a.official?10:0)+(a.type==="Trailer")*4+(a.iso_639_1==="ar"?3:a.iso_639_1==="en"?1:0)))[0];
 if(vs){document.getElementById("trc").hidden=false;document.getElementById("tr").innerHTML='<div class="vid"><iframe src="https://www.youtube-nocookie.com/embed/'+vs.key+'?rel=0" title="الإعلان الرسمي" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div>'}
 const g=(p.results||{}).SA||{},f=[...(g.flatrate||[]),...(g.free||[])],b=[...(g.rent||[]),...(g.buy||[])].filter((v,i,a)=>a.findIndex(z=>z.provider_id===v.provider_id)===i);
 const pr=l=>'<div class="prov">'+l.map(x=>'<span><img alt="" src="'+I+'w92'+x.logo_path+'">'+e(x.provider_name)+'</span>').join("")+'</div>';
