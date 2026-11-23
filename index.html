@@ -103,6 +103,18 @@ textarea.field{min-height:120px;direction:ltr;text-align:left}
 .lk{font:inherit;font-size:14px;font-weight:700;background:none;border:0;color:#a3253c;cursor:pointer;padding:6px 0;margin-top:6px;min-height:36px}
 .src{display:flex;gap:12px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
 .src b{font-family:Lalezar,serif;font-weight:400;font-size:26px}
+
+details.fg{margin-top:10px;border-top:1px dashed #d7b9b0;padding-top:6px}
+details.fg summary{cursor:pointer;font-weight:700;font-size:14px;color:#a3253c;min-height:36px;display:flex;align-items:center;gap:6px}
+details.fg[open] summary{margin-bottom:6px}
+.gm{display:grid;grid-template-columns:minmax(0,9.5em) minmax(0,1fr) 4.2em;gap:6px 10px;align-items:center;font-size:14px}
+.gm .tr{height:8px;border-radius:9px;background:#efd9d0;overflow:hidden}.gm .tr i{display:block;height:100%;border-radius:9px}
+.gm .lv{font-weight:700;white-space:nowrap}
+.l0 i{width:6%;background:#2e9d5b}.l1 i{width:34%;background:#d9a400}.l2 i{width:67%;background:#e2701b}.l3 i{width:100%;background:#c0283f}
+.l0 .lv,.lv.l0{color:#1f7a45}.lv.l1{color:#946f00}.lv.l2{color:#b3530c}.lv.l3{color:#c0283f}
+.rule{display:grid;grid-template-columns:minmax(0,11em) minmax(0,1fr);gap:8px 14px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.rule b{font-size:15px}
+@media(max-width:600px){.rule{grid-template-columns:1fr}.gm{grid-template-columns:minmax(0,7.5em) minmax(0,1fr) 3.8em;font-size:13px}}
 @media(max-width:600px){.ticket{grid-template-columns:minmax(0,1fr) 88px;
 -webkit-mask:radial-gradient(circle 10px at 88px 0,#0000 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 10px at 88px 100%,#0000 98%,#000) bottom/100% 51% no-repeat;
 mask:radial-gradient(circle 10px at 88px 0,#0000 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 10px at 88px 100%,#0000 98%,#000) bottom/100% 51% no-repeat}
@@ -116,7 +128,7 @@ mask:radial-gradient(circle 10px at 88px 0,#0000 98%,#000) top/100% 51% no-repea
   <div class="logo"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8 14h24l-3 22H11z" fill="#fff6ee"/><path d="M8 14h24l-.6 4H8.6z" fill="#ff5d73"/><path d="M14 14l1.5 22M20 14v22M26 14l-1.5 22" stroke="#ff5d73" stroke-width="2.4"/><circle cx="13" cy="10" r="4" fill="#fff6ee"/><circle cx="20" cy="8" r="5" fill="#fff6ee"/><circle cx="27" cy="10" r="4" fill="#fff6ee"/></svg>قرّرلي</div>
   <div class="tag">نختار لك في 30 ثانية</div>
 </header>
-<nav class="tabs" aria-label="أقسام الموقع"><a href="#pick" data-v="pick">قرّرلي أنا</a><a href="#together" data-v="together">اختاروا معًا</a><a href="#like" data-v="like">أفلام تشبه…</a></nav>
+<nav class="tabs" aria-label="أقسام الموقع"><a href="#pick" data-v="pick">قرّرلي أنا</a><a href="#together" data-v="together">اختاروا معًا</a><a href="#like" data-v="like">أفلام تشبه…</a><a href="#family" data-v="family">دليل العائلة</a></nav>
 <main id="v-pick" class="view">
 
 <h1>محتار شو تشوف الليلة؟</h1>
@@ -150,13 +162,30 @@ mask:radial-gradient(circle 10px at 88px 0,#0000 98%,#000) top/100% 51% no-repea
 <p class="hint">أو جرّب: <span id="lquick"></span></p></section>
 <section id="lout" aria-live="polite" style="margin-top:26px"></section>
 </main>
+<main id="v-family" class="view" hidden>
+<h1>دليل العائلة</h1>
+<p class="lead">قبل ما تشغّل فيلمًا قدّام أهلك أو أطفالك: اعرف كم فيه عنف وألفاظ ورعب ومشاهد غير لائقة، أو اختر فقط ما يناسب بيتك.</p>
+<section class="panel">
+<label for="fq" style="font-weight:700;display:block;margin-bottom:8px">هل هذا العمل يناسب العائلة؟</label>
+<div class="row"><input id="fq" class="field" list="ltitles" placeholder="اكتب اسم فيلم أو مسلسل" autocomplete="off" style="flex:1 1 240px"><button class="btn acc" id="fgo">افحصه</button></div>
+<div id="fone"></div>
+</section>
+<section class="panel" style="margin-top:18px">
+<h2 style="margin:0 0 4px;font-size:19px">أو اختار حسب ما يناسب بيتك</h2>
+<p class="hint" style="margin:0 0 16px">لكل نوع محتوى: هل يهمك؟</p>
+<div id="frules"></div>
+<div class="q"><h2>النوع</h2><div class="opts" data-fk="kind"><button class="opt" data-v="a" aria-pressed="true">الكل</button><button class="opt" data-v="m">أفلام</button><button class="opt" data-v="s">مسلسلات</button></div></div>
+</section>
+<section id="flist" aria-live="polite" style="margin-top:26px"></section>
+<p class="note">التقييمات تقديرية من فريق قرّرلي للنسخة الأصلية، وقد تختلف قليلًا من مشاهد لآخر. النسخ المدبلجة على القنوات العربية تُحذف منها بعض المشاهد غالبًا.</p>
+</main>
 <main id="v-together" class="view" hidden>
 <h1>اختاروا معًا</h1>
 <p class="lead">كل واحد يقلّب نفس البطاقات: "بشوفه" أو "لا". وبالآخر نطلع لكم العمل اللي اتفقتم عليه، بلا نقاش ولا زعل.</p>
 <div id="tg"></div>
 </main>
 
-<p class="note">نسخة تجريبية: القائمة الحالية فيها 60 عملًا مختارًا يدويًا، وتصنيف "مناسب للعائلة" مبدئي وسيُفصَّل لاحقًا (عنف، ألفاظ، مشاهد).</p>
+<p class="note">نسخة تجريبية: القائمة الحالية فيها 74 عملًا مختارًا يدويًا، وتصنيف "مناسب للعائلة" مبدئي وسيُفصَّل لاحقًا (عنف، ألفاظ، مشاهد).</p>
 </div>
 
 <script>
@@ -241,6 +270,12 @@ const D=[
 const KIND={m:"فيلم",s:"مسلسل"};
 const ORG={ar:"عربي",tr:"تركي",kr:"كوري",en:"أجنبي",an:"أنمي ورسوم"};
 const FAM={2:["مناسب للعائلة","fam2"],1:["للمراهقين فما فوق","fam1"],0:["للكبار فقط","fam0"]};
+
+const G={"Toy Story": "10100", "Up": "10100", "Coco": "10100", "Inside Out": "00100", "Finding Nemo": "10100", "Zootopia": "10100", "Paddington 2": "10000", "The Lion King": "20200", "Spirited Away": "10200", "Ratatouille": "10001", "WALL-E": "00000", "My Neighbor Totoro": "00000", "Grave of the Fireflies": "20200", "Your Name": "01110", "Kung Fu Panda": "10000", "Spider-Man: Into the Spider-Verse": "21100", "Klaus": "10000", "Soul": "00000", "Encanto": "00000", "The Message": "20100", "Lion of the Desert": "30100", "Wadjda": "00000", "Theeb": "20100", "Capernaum": "22111", "The Shawshank Redemption": "23121", "Forrest Gump": "22122", "The Pursuit of Happyness": "01000", "The Intouchables": "12012", "Knives Out": "12101", "Inception": "21100", "Interstellar": "11100", "The Martian": "12000", "The Prestige": "21111", "The Dark Knight": "21200", "Top Gun: Maverick": "22011", "Mad Max: Fury Road": "31210", "John Wick": "33111", "Gladiator": "31210", "Hachi: A Dog's Tale": "00000", "Home Alone": "11100", "Rush Hour": "22011", "The Terminal": "01010", "12 Angry Men": "00001", "Life of Pi": "20100", "Hidden Figures": "01001", "Catch Me If You Can": "11021", "Get Out": "32311", "A Quiet Place": "20300", "The Conjuring": "21300", "Parasite": "32221", "Diriliş: Ertuğrul": "30100", "Omar": "20000", "Al-Taghreba Al-Falastenya": "20100", "Paranormal": "11301", "Dayaa Dayaa": "01001", "Crash Landing on You": "21011", "Extraordinary Attorney Woo": "01000", "Reply 1988": "01011", "Move to Heaven": "11100", "Kingdom": "31300", "Squid Game": "33321", "Death Note": "20200", "Fullmetal Alchemist: Brotherhood": "21200", "Avatar: The Last Airbender": "10100", "Mr. Bean": "00000", "Planet Earth II": "10000", "Our Planet": "10000", "Sherlock": "21111", "The Queen's Gambit": "02023", "Chernobyl": "13202", "Band of Brothers": "33201", "Breaking Bad": "33223", "Dark": "22221", "Friends": "01021"};
+const GC=["عنف","ألفاظ نابية","رعب ومشاهد مخيفة","مشاهد غير لائقة","تدخين وكحول ومخدرات"],GL=["لا يوجد","خفيف","متوسط","كثير"];
+const gv=x=>(G[x.o]||"00000").split("").map(Number);
+const ghtml=x=>`<div class="gm">${gv(x).map((v,i)=>`<span>${GC[i]}</span><span class="tr l${v}"><i></i></span><span class="lv l${v}">${GL[v]}</span>`).join("")}</div>`;
+const gdet=(x,open)=>`<details class="fg"${open?" open":""}><summary>👪 دليل العائلة</summary>${ghtml(x)}</details>`;
 const MOODS={c:"كوميدي",e:"مؤثر",a:"أكشن",m:"لغز",h:"رعب",i:"ملهم",z:"مريح"};
 const sel={mood:null,who:null,time:null,origin:null};
 const $=s=>document.querySelector(s),out=$("#out");
@@ -264,7 +299,7 @@ function build(){const all=D.map(obj);
 function len(x){if(x.k==="m"){const h=Math.floor(x.n/60),m=x.n%60;return [h?h+" س":"",m?m+" د":""].filter(Boolean).join(" ")}
  return x.n?x.n+" حلقة":x.s+" مواسم"}
 function stub(x){return x.k==="m"?`<b>${x.n}</b><small>دقيقة</small>`:(x.n?`<b>${x.n}</b><small>حلقة</small>`:`<b>${x.s}</b><small>مواسم</small>`)}
-function ticket(x,i){const fm=FAM[x.f];return `<article class="ticket" data-i="${i}"><div class="t-main"><div class="t-kind">${KIND[x.k]} · ${ORG[x.org]} · ${x.y}</div><div class="t-title">${x.t}</div><div class="t-orig">${x.o}</div><p class="t-why">${x.why}</p><div class="chips"><span class="chip ${fm[1]}">${fm[0]}</span>${[...x.md].map(m=>`<span class="chip">${MOODS[m]}</span>`).join("")}<span class="chip">${len(x)}</span></div><button class="lk" data-like="${esc(x.o)}">أعمال تشبهه ←</button></div><div class="t-stub">${stub(x)}</div></article>`}
+function ticket(x,i){const fm=FAM[x.f];return `<article class="ticket" data-i="${i}"><div class="t-main"><div class="t-kind">${KIND[x.k]} · ${ORG[x.org]} · ${x.y}</div><div class="t-title">${x.t}</div><div class="t-orig">${x.o}</div><p class="t-why">${x.why}</p><div class="chips"><span class="chip ${fm[1]}">${fm[0]}</span>${[...x.md].map(m=>`<span class="chip">${MOODS[m]}</span>`).join("")}<span class="chip">${len(x)}</span></div><button class="lk" data-like="${esc(x.o)}">أعمال تشبهه ←</button>${gdet(x)}</div><div class="t-stub">${stub(x)}</div></article>`}
 function next(){if(pool.length<3)build();shown=pool.splice(0,3);return shown}
 function render(note){const t=next();
  out.innerHTML=`<div class="res-head"><h2>تذاكرك الليلة</h2><div class="actions" style="margin:0"><button class="btn acc" id="pick">اختر لي واحدًا فقط</button><button class="btn ghost" id="more">اقتراحات أخرى</button></div></div>${note?`<p class="hint" style="margin:0 0 12px">${note}</p>`:""}<div class="tickets">${t.map(ticket).join("")}</div><div id="spot"></div>`;
@@ -383,17 +418,33 @@ function findT(q){const n=norm(q);if(!n)return null;return ALL.find(x=>norm(x.t)
 function simil(a,b){const sh=[...a.md].filter(m=>b.md.includes(m));let s=sh.length*4+(a.md[0]===b.md[0]?3:0)+(a.k===b.k?4:0)+(a.org===b.org?1.5:0)+(a.f===b.f?1:0)-Math.min(Math.abs(a.y-b.y),40)/20;return{s,sh}}
 function like(){const q=$("#lq").value.trim(),src=findT(q),out=$("#lout");
  if(!q){out.innerHTML="";return}
- if(!src){out.innerHTML=`<div class="empty">ما لقينا "${esc(q)}" في قائمتنا الحالية (60 عملًا). قريبًا تصير القائمة آلاف الأعمال. جرّب اسمًا من الاقتراحات.</div>`;return}
+ if(!src){out.innerHTML=`<div class="empty">ما لقينا "${esc(q)}" في قائمتنا الحالية (74 عملًا). قريبًا تصير القائمة آلاف الأعمال. جرّب اسمًا من الاقتراحات.</div>`;return}
  const r=ALL.filter(x=>x!==src).map(x=>({x,...simil(src,x)})).sort((a,b)=>b.s-a.s).slice(0,5);
  out.innerHTML=`<div class="src"><span class="hint" style="margin:0">لأنك حبيت</span><b>${src.t}</b><span class="chip" style="color:var(--tink)">${KIND[src.k]} · ${ORG[src.org]}</span></div>
  <div class="tickets">${r.map(o=>{const why=[o.sh.length?`نفس الأجواء: ${o.sh.map(m=>MOODS[m]).join("، ")}`:"",o.x.k===src.k&&o.x.org===src.org?`${KIND[o.x.k]} ${ORG[o.x.org]} مثله`:""].filter(Boolean);const fm=FAM[o.x.f];
-  return `<article class="ticket"><div class="t-main"><div class="t-kind">${KIND[o.x.k]} · ${ORG[o.x.org]} · ${o.x.y}</div><div class="t-title">${o.x.t}</div><div class="t-orig">${o.x.o}</div><p class="t-why">${o.x.why}</p><div class="chips">${why.map(w=>`<span class="chip all">${w}</span>`).join("")}<span class="chip ${fm[1]}">${fm[0]}</span><span class="chip">${len(o.x)}</span></div><button class="lk" data-like="${esc(o.x.o)}">أعمال تشبه هذا ←</button></div><div class="t-stub">${stub(o.x)}</div></article>`}).join("")}</div>`;
+  return `<article class="ticket"><div class="t-main"><div class="t-kind">${KIND[o.x.k]} · ${ORG[o.x.org]} · ${o.x.y}</div><div class="t-title">${o.x.t}</div><div class="t-orig">${o.x.o}</div><p class="t-why">${o.x.why}</p><div class="chips">${why.map(w=>`<span class="chip all">${w}</span>`).join("")}<span class="chip ${fm[1]}">${fm[0]}</span><span class="chip">${len(o.x)}</span></div><button class="lk" data-like="${esc(o.x.o)}">أعمال تشبه هذا ←</button>${gdet(o.x)}</div><div class="t-stub">${stub(o.x)}</div></article>`}).join("")}</div>`;
  out.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"start"})}
 $("#lgo").onclick=like;$("#lq").addEventListener("keydown",e=>{if(e.key==="Enter")like()});
 document.addEventListener("click",e=>{const b=e.target.closest(".lk");if(!b)return;const x=ALL.find(y=>y.o===b.dataset.like);if(!x)return;$("#lq").value=x.t;
  if(location.hash!=="#like")location.hash="like";else route();like()});
+
+/* ===== دليل العائلة ===== */
+const fr=[0,0,0,0,0];let fkind="a";
+$("#frules").innerHTML=GC.map((c,i)=>`<div class="rule"><b>${c}</b><div class="opts" data-fr="${i}"><button class="opt" data-v="0" aria-pressed="true">ما بتفرق</button><button class="opt" data-v="1">خفيف مقبول</button><button class="opt" data-v="2">بدون أبدًا</button></div></div>`).join("");
+document.querySelectorAll("[data-fr]").forEach(o=>o.onclick=e=>{const b=e.target.closest(".opt");if(!b)return;fr[+o.dataset.fr]=+b.dataset.v;o.querySelectorAll(".opt").forEach(x=>x.setAttribute("aria-pressed",x===b));flist()});
+document.querySelector("[data-fk]").onclick=e=>{const b=e.target.closest(".opt");if(!b)return;fkind=b.dataset.v;e.currentTarget.querySelectorAll(".opt").forEach(x=>x.setAttribute("aria-pressed",x===b));flist()};
+function fcard(x,open){const fm=FAM[x.f];return `<article class="ticket"><div class="t-main"><div class="t-kind">${KIND[x.k]} · ${ORG[x.org]} · ${x.y}</div><div class="t-title">${x.t}</div><div class="t-orig">${x.o}</div><p class="t-why">${x.why}</p><div class="chips"><span class="chip ${fm[1]}">${fm[0]}</span><span class="chip">${len(x)}</span></div>${gdet(x,open)}<button class="lk" data-like="${esc(x.o)}">أعمال تشبهه ←</button></div><div class="t-stub">${stub(x)}</div></article>`}
+function flist(){const l=ALL.filter(x=>(fkind==="a"||x.k===fkind)&&gv(x).every((v,i)=>fr[i]===0||(fr[i]===1?v<=1:v===0)))
+ .sort((a,b)=>gv(a).reduce((s,v)=>s+v,0)-gv(b).reduce((s,v)=>s+v,0));
+ $("#flist").innerHTML=`<div class="res-head"><h2>${l.length?l.length+" عمل يناسب بيتك":"ما في أعمال بهذه الشروط"}</h2></div>${l.length?`<div class="tickets">${l.map(x=>fcard(x,false)).join("")}</div>`:'<div class="empty">خفّف شرطًا واحدًا وجرّب مرة ثانية.</div>'}`}
+function fone(){const q=$("#fq").value.trim(),x=findT(q);if(!q){$("#fone").innerHTML="";return}
+ if(!x){$("#fone").innerHTML=`<div class="empty" style="margin-top:14px">ما لقينا "${esc(q)}" في قائمتنا الحالية.</div>`;return}
+ const v=gv(x),mx=Math.max(...v);const verdictTxt=mx===0?"✅ نظيف تمامًا ويناسب كل العائلة":mx===1?"🟡 يناسب العائلة غالبًا، فيه أشياء خفيفة":mx===2?"🟠 انتبه: فيه محتوى متوسط، شوف التفاصيل قبل الأطفال":"🔴 لا يناسب الأطفال";
+ $("#fone").innerHTML=`<p style="font-weight:700;font-size:18px;margin:16px 0 10px">${verdictTxt}</p><div class="tickets">${fcard(x,true)}</div>`}
+$("#fgo").onclick=fone;$("#fq").addEventListener("keydown",e=>{if(e.key==="Enter")fone()});
+flist();
 /* ===== التنقل ===== */
-function route(){const hs=location.hash.slice(1);const rm=hs.match(/^room-(.+)$/);const v=rm||hs==="together"?"together":hs==="like"?"like":"pick";
+function route(){const hs=location.hash.slice(1);const rm=hs.match(/^room-(.+)$/);const v=rm||hs==="together"?"together":["like","family"].includes(hs)?hs:"pick";
  document.querySelectorAll(".view").forEach(m=>m.hidden=m.id!=="v-"+v);
  document.querySelectorAll("nav.tabs a").forEach(a=>{if(a.dataset.v===v)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
  if(v==="together"){if(rm&&ROOM.test(rm[1]))roomJoin(rm[1]);else if(!tg.innerHTML)setup()}}
