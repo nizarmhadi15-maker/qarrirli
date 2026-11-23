@@ -124,6 +124,25 @@ details.fg[open] summary{margin-bottom:6px}
 @media(max-width:600px){.rule{grid-template-columns:1fr}.gm{grid-template-columns:minmax(0,7.5em) minmax(0,1fr) 3.8em;font-size:13px}}
 .foot{max-width:860px;margin:30px auto 0;padding:22px max(4vw,16px) 40px;border-top:1px solid var(--line);color:var(--mute);font-size:14px}
 .foot nav{display:flex;flex-wrap:wrap;gap:6px 18px;margin-bottom:8px}.foot a{color:var(--ink);text-decoration:none;padding:6px 0}.foot a:hover{color:var(--acc)}
+
+.acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.ab{font:inherit;font-size:14px;font-weight:700;min-height:38px;padding:6px 14px;border-radius:999px;border:1.5px solid #d7b9b0;background:#fff;color:#2a0a12;cursor:pointer}
+.ab[aria-pressed=true]{background:#2a0a12;color:#fff6ee;border-color:#2a0a12}
+.warn{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.warn span{font-size:13px;padding:3px 10px;border-radius:999px;background:#fde3c8;color:#7a3b00;white-space:nowrap}
+.worth{margin:10px 0 0;padding:8px 12px;border-radius:10px;background:#efe3f7;color:#3e1f55;font-size:14.5px}
+.dl{display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--bg2);border:1px dashed var(--acc);border-radius:16px;padding:12px 16px;margin:0 0 18px}
+.dl b{font-family:Lalezar,serif;font-weight:400;font-size:24px}.dl small{color:var(--mute);display:block}
+.dl button{margin-inline-start:auto}
+.ser{margin-bottom:18px}
+.ser h2{margin:0 0 4px;font-size:21px}
+.ord{display:flex;gap:6px;margin:10px 0 12px;flex-wrap:wrap}
+.step{display:flex;gap:12px;align-items:center;padding:10px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+.step input{width:22px;height:22px;flex:none;accent-color:var(--acc)}
+.step .n{font-family:Lalezar,serif;font-size:22px;color:var(--acc);width:1.6em;text-align:center;flex:none}
+.step.done span.t{text-decoration:line-through;opacity:.6}
+.step small{color:var(--mute);display:block;direction:ltr;text-align:right}
+.stars{display:inline-flex;gap:2px}.stars button{font-size:22px;background:none;border:0;cursor:pointer;color:#d7b9b0;padding:2px;min-height:36px}.stars button.on{color:#e0a100}
+.ep{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:14px}.ep input{width:80px;min-height:38px;font:inherit;border-radius:10px;border:1.5px solid #d7b9b0;padding:4px 8px}
 @media(max-width:600px){.ticket{grid-template-columns:minmax(0,1fr) 88px;
 -webkit-mask:radial-gradient(circle 10px at 88px 0,#0000 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 10px at 88px 100%,#0000 98%,#000) bottom/100% 51% no-repeat;
 mask:radial-gradient(circle 10px at 88px 0,#0000 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 10px at 88px 100%,#0000 98%,#000) bottom/100% 51% no-repeat}
@@ -137,11 +156,12 @@ mask:radial-gradient(circle 10px at 88px 0,#0000 98%,#000) top/100% 51% no-repea
   <div class="logo"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8 14h24l-3 22H11z" fill="#fff6ee"/><path d="M8 14h24l-.6 4H8.6z" fill="#ff5d73"/><path d="M14 14l1.5 22M20 14v22M26 14l-1.5 22" stroke="#ff5d73" stroke-width="2.4"/><circle cx="13" cy="10" r="4" fill="#fff6ee"/><circle cx="20" cy="8" r="5" fill="#fff6ee"/><circle cx="27" cy="10" r="4" fill="#fff6ee"/></svg>قرّرلي</div>
   <div class="tag">نختار لك في 30 ثانية</div>
 </header>
-<nav class="tabs" aria-label="أقسام الموقع"><a href="#pick" data-v="pick">قرّرلي أنا</a><a href="#together" data-v="together">اختاروا معًا</a><a href="#like" data-v="like">أفلام تشبه…</a><a href="#family" data-v="family">دليل العائلة</a></nav>
+<nav class="tabs" aria-label="أقسام الموقع"><a href="#pick" data-v="pick">قرّرلي أنا</a><a href="#together" data-v="together">اختاروا معًا</a><a href="#like" data-v="like">أفلام تشبه…</a><a href="#family" data-v="family">دليل العائلة</a><a href="#guides" data-v="guides">ترتيب المشاهدة</a><a href="#mine" data-v="mine">قائمتي</a></nav>
 <main id="v-pick" class="view">
 
 <h1>محتار شو تشوف الليلة؟</h1>
-<p class="lead">جاوب على أربعة أسئلة سريعة، ونطبع لك ثلاث تذاكر فقط تناسب مزاجك ووقتك ومن معك.</p>
+<div id="daily"></div>
+<p class="lead">جاوب على أسئلة سريعة، ونطبع لك ثلاث تذاكر فقط تناسب مزاجك ووقتك ومن معك.</p>
 
 <section class="panel" aria-label="أسئلة الاختيار">
   <div class="q" data-k="mood"><h2><span>١</span>كيف مزاجك الآن؟</h2><div class="opts">
@@ -156,6 +176,10 @@ mask:radial-gradient(circle 10px at 88px 0,#0000 98%,#000) top/100% 51% no-repea
   <div class="q" data-k="origin"><h2><span>٤</span>شو بتحب؟</h2><div class="opts">
     <button class="opt" data-v="ar">عربي</button><button class="opt" data-v="tr">تركي</button><button class="opt" data-v="kr">كوري</button><button class="opt" data-v="en">أجنبي</button><button class="opt" data-v="an">أنمي ورسوم</button><button class="opt" data-v="any">ما بتفرق</button>
   </div></div>
+  <div class="q" data-k="audio"><h2><span>٥</span>الصوت</h2><div class="opts">
+    <button class="opt" data-v="ar">بالعربي فقط (أصلي أو مدبلج)</button><button class="opt" data-v="any">ما بتفرق، الترجمة تمام</button>
+  </div></div>
+  <label class="hint" style="display:flex;gap:8px;align-items:center;margin:0 0 14px"><input type="checkbox" id="skipw" checked style="width:20px;height:20px"> لا تقترح عليّ أعمالًا علّمت أني شاهدتها</label>
   <div class="actions"><button class="btn acc" id="go">اطبع تذاكري</button><button class="btn ghost" id="reset">ابدأ من جديد</button></div>
   <p class="hint" id="hint">اختر المزاج على الأقل، والباقي إذا حبيت.</p>
 </section>
@@ -183,10 +207,21 @@ mask:radial-gradient(circle 10px at 88px 0,#0000 98%,#000) top/100% 51% no-repea
 <h2 style="margin:0 0 4px;font-size:19px">أو اختار حسب ما يناسب بيتك</h2>
 <p class="hint" style="margin:0 0 16px">لكل نوع محتوى: هل يهمك؟</p>
 <div id="frules"></div>
+<div class="q" style="margin-top:14px"><h2>بدون هذه التنبيهات</h2><div class="opts" id="fw"></div></div>
 <div class="q"><h2>النوع</h2><div class="opts" data-fk="kind"><button class="opt" data-v="a" aria-pressed="true">الكل</button><button class="opt" data-v="m">أفلام</button><button class="opt" data-v="s">مسلسلات</button></div></div>
 </section>
 <section id="flist" aria-live="polite" style="margin-top:26px"></section>
 <p class="note">التقييمات تقديرية من فريق قرّرلي للنسخة الأصلية، وقد تختلف قليلًا من مشاهد لآخر. النسخ المدبلجة على القنوات العربية تُحذف منها بعض المشاهد غالبًا.</p>
+</main>
+<main id="v-guides" class="view" hidden>
+<h1>ترتيب المشاهدة</h1>
+<p class="lead">سلاسل طويلة ومحتار من وين تبدأ؟ اختر الترتيب، وعلّم على كل جزء تخلّصه، والموقع يتذكر وين وصلت.</p>
+<div id="gl"></div>
+</main>
+<main id="v-mine" class="view" hidden>
+<h1>قائمتي</h1>
+<p class="lead">كل ما حفظته "لاحقًا" أو علّمت أنك شاهدته. القائمة محفوظة على جهازك هذا فقط.</p>
+<div id="ml"></div>
 </main>
 <main id="v-together" class="view" hidden>
 <h1>اختاروا معًا</h1>
@@ -285,9 +320,18 @@ const G={"Toy Story": "10100", "Up": "10100", "Coco": "10100", "Inside Out": "00
 const GC=["عنف","ألفاظ نابية","رعب ومشاهد مخيفة","مشاهد غير لائقة","تدخين وكحول ومخدرات"],GL=["لا يوجد","خفيف","متوسط","كثير"];
 const gv=x=>(G[x.o]||"00000").split("").map(Number);
 const ghtml=x=>`<div class="gm">${gv(x).map((v,i)=>`<span>${GC[i]}</span><span class="tr l${v}"><i></i></span><span class="lv l${v}">${GL[v]}</span>`).join("")}</div>`;
-const gdet=(x,open)=>`<details class="fg"${open?" open":""}><summary>👪 دليل العائلة</summary>${ghtml(x)}</details>`;
+const gdet=(x,open)=>`<details class="fg"${open?" open":""}><summary>👪 دليل العائلة${(W[x.o]||[]).length?" · ⚠️ تنبيهات":""}</summary>${ghtml(x)}${(W[x.o]||[]).length?`<div class="warn">${W[x.o].map(k=>`<span>⚠️ ${WL[k]}</span>`).join("")}</div>`:""}</details>`;
+
+const W={"Up": ["lc", "sd2"], "Finding Nemo": ["lc"], "The Lion King": ["lc"], "Inside Out": ["sd2"], "Grave of the Fireflies": ["ch", "sd", "wr"], "Hachi: A Dog's Tale": ["lc", "sd", "an"], "Forrest Gump": ["lc", "wr"], "Gladiator": ["lc", "bl"], "Capernaum": ["ch"], "Life of Pi": ["an"], "Band of Brothers": ["wr", "bl"], "Chernobyl": ["an", "bl"], "Squid Game": ["bl", "lc"], "Breaking Bad": ["bl"], "Kingdom": ["bl", "js"], "Get Out": ["js"], "The Conjuring": ["js"], "A Quiet Place": ["js", "ch"], "Parasite": ["bl"], "Death Note": ["lc"], "Fullmetal Alchemist: Brotherhood": ["lc", "an"], "Al-Taghreba Al-Falastenya": ["wr", "lc"], "Omar": ["wr"], "Lion of the Desert": ["wr"], "The Message": ["wr"], "The Dark Knight": ["lc"], "The Shawshank Redemption": ["su"], "John Wick": ["an", "bl"], "Move to Heaven": ["lc"], "The Queen's Gambit": ["lc"], "Dark": ["su"], "Paranormal": ["js"], "Diriliş: Ertuğrul": ["wr", "bl"], "Mad Max: Fury Road": ["bl"], "Theeb": ["lc"]},WL={lc:"موت شخصية محبوبة",sd:"نهاية حزينة",sd2:"مشاهد حزينة مؤثرة",an:"موت أو أذى حيوان",bl:"مشاهد دم",wr:"مشاهد حرب ومعارك",js:"قفزات رعب مفاجئة",su:"انتحار",ch:"أذى أو معاناة أطفال"};
+const DUB=new Set(["Toy Story", "Up", "Coco", "Inside Out", "Finding Nemo", "Zootopia", "The Lion King", "Ratatouille", "WALL-E", "Kung Fu Panda", "Soul", "Encanto", "Klaus", "Diriliş: Ertuğrul", "Avatar: The Last Airbender", "Mr. Bean"]),WORTH={"Breaking Bad": "الموسم الأول أبطأ وأقصر، والمسلسل يشتد كثيرًا من الموسم الثاني. يستحق الصبر.", "Friends": "الموسم الأول أضعف قليلًا، والضحك يزيد من الموسم الثاني.", "Diriliş: Ertuğrul": "البداية بطيئة نسبيًا والحلقات طويلة؛ كثيرون يقولون إنه يقوى من الموسم الثاني.", "Squid Game": "الموسم الأول قصة مكتملة بحد ذاتها. إذا اكتفيت به لن تخسر نهاية.", "Avatar: The Last Airbender": "يبدأ بأسلوب طفولي، ويصير أنضج وأعمق بكثير مع التقدم. لا توقف في الحلقات الأولى.", "Sherlock": "المواسم الأولى هي الأقوى عند أغلب المشاهدين؛ الرابع أضعف.", "Death Note": "النصف الأول هو الأقوى عند أغلب المشاهدين، لكن القصة تكتمل للنهاية.", "Dark": "الحلقات الأولى مربكة بسبب كثرة الشخصيات؛ اصبر، وكل شيء يرتبط لاحقًا.", "Reply 1988": "إيقاعه هادئ والحلقات طويلة؛ متعته في التعلق بالشخصيات مع الوقت.", "Fullmetal Alchemist: Brotherhood": "البداية سريعة وتختصر أحداثًا كثيرة، ثم تستقر القصة وتصبح من الأفضل.", "Chernobyl": "قصير ومشدود من أول حلقة. لا تتوقف.", "The Queen's Gambit": "7 حلقات فقط ومشوّق من البداية؛ تنهيه بسرعة.", "Kingdom": "مشدود من الحلقة الأولى، والموسمان قصيران.", "Crash Landing on You": "الحلقات طويلة (أكثر من ساعة)؛ أول حلقتين تمهيد ثم يصير ممتعًا جدًا.", "Omar": "30 حلقة متماسكة؛ يزيد تأثيره مع التقدم."},GUIDES=[{"n": "هاري بوتر وعالم السحرة", "note": "8 أفلام لهاري بوتر + 3 أفلام وحوش مذهلة تجري قبلها بعشرات السنين.", "orders": {"ترتيب العرض (الأفضل لأول مرة)": [["هاري بوتر وحجر الفيلسوف", 2001], ["هاري بوتر وحجرة الأسرار", 2002], ["هاري بوتر وسجين أزكابان", 2004], ["هاري بوتر وكأس النار", 2005], ["هاري بوتر وجماعة العنقاء", 2007], ["هاري بوتر والأمير الهجين", 2009], ["هاري بوتر ومقدسات الموت ج1", 2010], ["هاري بوتر ومقدسات الموت ج2", 2011], ["وحوش مذهلة وأين تجدها", 2016], ["وحوش مذهلة: جرائم غريندلوالد", 2018], ["وحوش مذهلة: أسرار دمبلدور", 2022]], "الترتيب الزمني للأحداث": [["وحوش مذهلة وأين تجدها", 2016], ["وحوش مذهلة: جرائم غريندلوالد", 2018], ["وحوش مذهلة: أسرار دمبلدور", 2022], ["هاري بوتر وحجر الفيلسوف", 2001], ["هاري بوتر وحجرة الأسرار", 2002], ["هاري بوتر وسجين أزكابان", 2004], ["هاري بوتر وكأس النار", 2005], ["هاري بوتر وجماعة العنقاء", 2007], ["هاري بوتر والأمير الهجين", 2009], ["هاري بوتر ومقدسات الموت ج1", 2010], ["هاري بوتر ومقدسات الموت ج2", 2011]]}}, {"n": "سيد الخواتم والهوبيت", "note": "6 أفلام. الهوبيت تجري أحداثها قبل سيد الخواتم بـ60 عامًا.", "orders": {"ترتيب العرض": [["سيد الخواتم: رفقة الخاتم", 2001], ["سيد الخواتم: البرجان", 2002], ["سيد الخواتم: عودة الملك", 2003], ["الهوبيت: رحلة غير متوقعة", 2012], ["الهوبيت: خراب سموغ", 2013], ["الهوبيت: معركة الجيوش الخمسة", 2014]], "الترتيب الزمني للأحداث": [["الهوبيت: رحلة غير متوقعة", 2012], ["الهوبيت: خراب سموغ", 2013], ["الهوبيت: معركة الجيوش الخمسة", 2014], ["سيد الخواتم: رفقة الخاتم", 2001], ["سيد الخواتم: البرجان", 2002], ["سيد الخواتم: عودة الملك", 2003]]}}, {"n": "حرب النجوم (الملحمة الرئيسية)", "note": "9 حلقات رئيسية + فيلمان جانبيان. ترتيب العرض يحافظ على أشهر مفاجأة في تاريخ السينما.", "orders": {"ترتيب العرض (ننصح به)": [["الحلقة 4: أمل جديد", 1977], ["الحلقة 5: الإمبراطورية تعيد الضربة", 1980], ["الحلقة 6: عودة الجيداي", 1983], ["الحلقة 1: الخطر الشبح", 1999], ["الحلقة 2: هجوم المستنسخين", 2002], ["الحلقة 3: انتقام السيث", 2005], ["الحلقة 7: نهوض القوة", 2015], ["روغ ون", 2016], ["الحلقة 8: آخر الجيداي", 2017], ["سولو", 2018], ["الحلقة 9: صعود سكاي ووكر", 2019]], "الترتيب الزمني للأحداث": [["الحلقة 1: الخطر الشبح", 1999], ["الحلقة 2: هجوم المستنسخين", 2002], ["الحلقة 3: انتقام السيث", 2005], ["سولو", 2018], ["روغ ون", 2016], ["الحلقة 4: أمل جديد", 1977], ["الحلقة 5: الإمبراطورية تعيد الضربة", 1980], ["الحلقة 6: عودة الجيداي", 1983], ["الحلقة 7: نهوض القوة", 2015], ["الحلقة 8: آخر الجيداي", 2017], ["الحلقة 9: صعود سكاي ووكر", 2019]]}}, {"n": "حكاية لعبة", "note": "4 أفلام تكبر معك، شاهدها بالترتيب.", "orders": {"الترتيب": [["حكاية لعبة", 1995], ["حكاية لعبة 2", 1999], ["حكاية لعبة 3", 2010], ["حكاية لعبة 4", 2019]]}}, {"n": "قيامة أرطغرل ثم المؤسس عثمان", "note": "المؤسس عثمان يكمل القصة بعد أرطغرل مع ابنه عثمان.", "orders": {"الترتيب": [["قيامة أرطغرل (5 مواسم)", 2014], ["المؤسس عثمان", 2019]]}}];
+const hasAr=x=>x.org==="ar"||DUB.has(x.o)||x.o==="Mr. Bean";
+const LS={later:{},seen:{},rate:{},ep:{},gd:{}};
+try{Object.assign(LS,JSON.parse(localStorage.getItem("ft-ls")||"{}"))}catch(e){}
+const saveLS=()=>{try{localStorage.setItem("ft-ls",JSON.stringify(LS))}catch(e){}};
+const acts=x=>`<div class="acts"><button class="ab" data-act="later" data-o="${esc(x.o)}" aria-pressed="${!!LS.later[x.o]}">＋ سأشاهده لاحقًا</button><button class="ab" data-act="seen" data-o="${esc(x.o)}" aria-pressed="${!!LS.seen[x.o]}">✓ شاهدته</button></div>`;
+const extra=x=>`${hasAr(x)?'<div class="chips" style="margin-top:8px"><span class="chip">🔊 متوفر بالعربي</span></div>':""}${WORTH[x.o]?`<p class="worth"><b>هل يستحق أكمله؟</b> ${WORTH[x.o]}</p>`:""}`;
 const MOODS={c:"كوميدي",e:"مؤثر",a:"أكشن",m:"لغز",h:"رعب",i:"ملهم",z:"مريح"};
-const sel={mood:null,who:null,time:null,origin:null};
+const sel={mood:null,who:null,time:null,origin:null,audio:null};
 const $=s=>document.querySelector(s),out=$("#out");
 let pool=[],shown=[];
 function load(){try{const s=JSON.parse(localStorage.getItem("ft-sel")||"{}");Object.assign(sel,s)}catch(e){}}
@@ -299,7 +343,7 @@ function fitTime(x,t){if(!t||t==="any")return true;
  if(t==="short")return x.k==="m"&&x.n<100;if(t==="film")return x.k==="m"&&x.n<=180;
  if(t==="mini")return x.k==="s"&&x.n>0&&x.n<=10;if(t==="long")return x.k==="s"&&(x.n===0||x.n>10);return true}
 function build(){const all=D.map(obj);
- const pass=(x,useT,useO)=>(sel.who!=="fam"||x.f===2)&&(!useT||fitTime(x,sel.time))&&(!useO||!sel.origin||sel.origin==="any"||x.org===sel.origin);
+ const pass=(x,useT,useO)=>(sel.who!=="fam"||x.f===2)&&(sel.audio!=="ar"||hasAr(x))&&!($("#skipw").checked&&LS.seen[x.o])&&(!useT||fitTime(x,sel.time))&&(!useO||!sel.origin||sel.origin==="any"||x.org===sel.origin);
  let relaxed="";let list=all.filter(x=>pass(x,1,1));
  if(list.length<3){list=all.filter(x=>pass(x,1,0));relaxed="لم نجد ما يكفي من النوع الذي اخترته، فأضفنا أعمالًا من أصول أخرى."}
  if(list.length<3){list=all.filter(x=>pass(x,0,0));relaxed="وسّعنا البحث قليلًا لأن الخيارات المطابقة تمامًا قليلة."}
@@ -309,7 +353,7 @@ function build(){const all=D.map(obj);
 function len(x){if(x.k==="m"){const h=Math.floor(x.n/60),m=x.n%60;return [h?h+" س":"",m?m+" د":""].filter(Boolean).join(" ")}
  return x.n?x.n+" حلقة":x.s+" مواسم"}
 function stub(x){return x.k==="m"?`<b>${x.n}</b><small>دقيقة</small>`:(x.n?`<b>${x.n}</b><small>حلقة</small>`:`<b>${x.s}</b><small>مواسم</small>`)}
-function ticket(x,i){const fm=FAM[x.f];return `<article class="ticket" data-i="${i}"><div class="t-main"><div class="t-kind">${KIND[x.k]} · ${ORG[x.org]} · ${x.y}</div><div class="t-title">${x.t}</div><div class="t-orig">${x.o}</div><p class="t-why">${x.why}</p><div class="chips"><span class="chip ${fm[1]}">${fm[0]}</span>${[...x.md].map(m=>`<span class="chip">${MOODS[m]}</span>`).join("")}<span class="chip">${len(x)}</span></div><button class="lk" data-like="${esc(x.o)}">أعمال تشبهه ←</button>${gdet(x)}</div><div class="t-stub">${stub(x)}</div></article>`}
+function ticket(x,i){const fm=FAM[x.f];return `<article class="ticket" data-i="${i}"><div class="t-main"><div class="t-kind">${KIND[x.k]} · ${ORG[x.org]} · ${x.y}</div><div class="t-title">${x.t}</div><div class="t-orig">${x.o}</div><p class="t-why">${x.why}</p><div class="chips"><span class="chip ${fm[1]}">${fm[0]}</span>${[...x.md].map(m=>`<span class="chip">${MOODS[m]}</span>`).join("")}<span class="chip">${len(x)}</span></div>${extra(x)}${acts(x)}<button class="lk" data-like="${esc(x.o)}">أعمال تشبهه ←</button>${gdet(x)}</div><div class="t-stub">${stub(x)}</div></article>`}
 function next(){if(pool.length<3)build();shown=pool.splice(0,3);return shown}
 function render(note){const t=next();
  out.innerHTML=`<div class="res-head"><h2>تذاكرك الليلة</h2><div class="actions" style="margin:0"><button class="btn acc" id="pick">اختر لي واحدًا فقط</button><button class="btn ghost" id="more">اقتراحات أخرى</button></div></div>${note?`<p class="hint" style="margin:0 0 12px">${note}</p>`:""}<div class="tickets">${t.map(ticket).join("")}</div><div id="spot"></div>`;
@@ -432,19 +476,21 @@ function like(){const q=$("#lq").value.trim(),src=findT(q),out=$("#lout");
  const r=ALL.filter(x=>x!==src).map(x=>({x,...simil(src,x)})).sort((a,b)=>b.s-a.s).slice(0,5);
  out.innerHTML=`<div class="src"><span class="hint" style="margin:0">لأنك حبيت</span><b>${src.t}</b><span class="chip" style="color:var(--tink)">${KIND[src.k]} · ${ORG[src.org]}</span></div>
  <div class="tickets">${r.map(o=>{const why=[o.sh.length?`نفس الأجواء: ${o.sh.map(m=>MOODS[m]).join("، ")}`:"",o.x.k===src.k&&o.x.org===src.org?`${KIND[o.x.k]} ${ORG[o.x.org]} مثله`:""].filter(Boolean);const fm=FAM[o.x.f];
-  return `<article class="ticket"><div class="t-main"><div class="t-kind">${KIND[o.x.k]} · ${ORG[o.x.org]} · ${o.x.y}</div><div class="t-title">${o.x.t}</div><div class="t-orig">${o.x.o}</div><p class="t-why">${o.x.why}</p><div class="chips">${why.map(w=>`<span class="chip all">${w}</span>`).join("")}<span class="chip ${fm[1]}">${fm[0]}</span><span class="chip">${len(o.x)}</span></div><button class="lk" data-like="${esc(o.x.o)}">أعمال تشبه هذا ←</button>${gdet(o.x)}</div><div class="t-stub">${stub(o.x)}</div></article>`}).join("")}</div>`;
+  return `<article class="ticket"><div class="t-main"><div class="t-kind">${KIND[o.x.k]} · ${ORG[o.x.org]} · ${o.x.y}</div><div class="t-title">${o.x.t}</div><div class="t-orig">${o.x.o}</div><p class="t-why">${o.x.why}</p><div class="chips">${why.map(w=>`<span class="chip all">${w}</span>`).join("")}<span class="chip ${fm[1]}">${fm[0]}</span><span class="chip">${len(o.x)}</span></div>${extra(o.x)}${acts(o.x)}<button class="lk" data-like="${esc(o.x.o)}">أعمال تشبه هذا ←</button>${gdet(o.x)}</div><div class="t-stub">${stub(o.x)}</div></article>`}).join("")}</div>`;
  out.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"start"})}
 $("#lgo").onclick=like;$("#lq").addEventListener("keydown",e=>{if(e.key==="Enter")like()});
 document.addEventListener("click",e=>{const b=e.target.closest(".lk");if(!b)return;const x=ALL.find(y=>y.o===b.dataset.like);if(!x)return;$("#lq").value=x.t;
  if(location.hash!=="#like")location.hash="like";else route();like()});
 
 /* ===== دليل العائلة ===== */
-const fr=[0,0,0,0,0];let fkind="a";
+const fr=[0,0,0,0,0];let fkind="a";const fwx=new Set();
+$("#fw").innerHTML=Object.entries(WL).filter(([k])=>k!=="sd2").map(([k,t])=>`<button class="opt" data-w="${k}" aria-pressed="false">${t}</button>`).join("");
+$("#fw").onclick=e=>{const b=e.target.closest(".opt");if(!b)return;const k=b.dataset.w;fwx.has(k)?fwx.delete(k):fwx.add(k);b.setAttribute("aria-pressed",fwx.has(k));flist()};
 $("#frules").innerHTML=GC.map((c,i)=>`<div class="rule"><b>${c}</b><div class="opts" data-fr="${i}"><button class="opt" data-v="0" aria-pressed="true">ما بتفرق</button><button class="opt" data-v="1">خفيف مقبول</button><button class="opt" data-v="2">بدون أبدًا</button></div></div>`).join("");
 document.querySelectorAll("[data-fr]").forEach(o=>o.onclick=e=>{const b=e.target.closest(".opt");if(!b)return;fr[+o.dataset.fr]=+b.dataset.v;o.querySelectorAll(".opt").forEach(x=>x.setAttribute("aria-pressed",x===b));flist()});
 document.querySelector("[data-fk]").onclick=e=>{const b=e.target.closest(".opt");if(!b)return;fkind=b.dataset.v;e.currentTarget.querySelectorAll(".opt").forEach(x=>x.setAttribute("aria-pressed",x===b));flist()};
-function fcard(x,open){const fm=FAM[x.f];return `<article class="ticket"><div class="t-main"><div class="t-kind">${KIND[x.k]} · ${ORG[x.org]} · ${x.y}</div><div class="t-title">${x.t}</div><div class="t-orig">${x.o}</div><p class="t-why">${x.why}</p><div class="chips"><span class="chip ${fm[1]}">${fm[0]}</span><span class="chip">${len(x)}</span></div>${gdet(x,open)}<button class="lk" data-like="${esc(x.o)}">أعمال تشبهه ←</button></div><div class="t-stub">${stub(x)}</div></article>`}
-function flist(){const l=ALL.filter(x=>(fkind==="a"||x.k===fkind)&&gv(x).every((v,i)=>fr[i]===0||(fr[i]===1?v<=1:v===0)))
+function fcard(x,open){const fm=FAM[x.f];return `<article class="ticket"><div class="t-main"><div class="t-kind">${KIND[x.k]} · ${ORG[x.org]} · ${x.y}</div><div class="t-title">${x.t}</div><div class="t-orig">${x.o}</div><p class="t-why">${x.why}</p><div class="chips"><span class="chip ${fm[1]}">${fm[0]}</span><span class="chip">${len(x)}</span></div>${extra(x)}${acts(x)}${gdet(x,open)}<button class="lk" data-like="${esc(x.o)}">أعمال تشبهه ←</button></div><div class="t-stub">${stub(x)}</div></article>`}
+function flist(){const l=ALL.filter(x=>(fkind==="a"||x.k===fkind)&&gv(x).every((v,i)=>fr[i]===0||(fr[i]===1?v<=1:v===0))&&!(W[x.o]||[]).some(k=>fwx.has(k)||(k==="sd2"&&fwx.has("sd"))))
  .sort((a,b)=>gv(a).reduce((s,v)=>s+v,0)-gv(b).reduce((s,v)=>s+v,0));
  $("#flist").innerHTML=`<div class="res-head"><h2>${l.length?l.length+" عمل يناسب بيتك":"ما في أعمال بهذه الشروط"}</h2></div>${l.length?`<div class="tickets">${l.map(x=>fcard(x,false)).join("")}</div>`:'<div class="empty">خفّف شرطًا واحدًا وجرّب مرة ثانية.</div>'}`}
 function fone(){const q=$("#fq").value.trim(),x=findT(q);if(!q){$("#fone").innerHTML="";return}
@@ -453,8 +499,37 @@ function fone(){const q=$("#fq").value.trim(),x=findT(q);if(!q){$("#fone").inner
  $("#fone").innerHTML=`<p style="font-weight:700;font-size:18px;margin:16px 0 10px">${verdictTxt}</p><div class="tickets">${fcard(x,true)}</div>`}
 $("#fgo").onclick=fone;$("#fq").addEventListener("keydown",e=>{if(e.key==="Enter")fone()});
 flist();
+
+/* ===== قائمتي + أزرار ===== */
+document.addEventListener("click",e=>{const b=e.target.closest(".ab");if(!b)return;const k=b.dataset.act,o=b.dataset.o;
+ if(LS[k][o])delete LS[k][o];else{LS[k][o]=Date.now();if(k==="seen")delete LS.later[o]}saveLS();
+ document.querySelectorAll(`.ab[data-o="${CSS.escape(o)}"]`).forEach(x=>x.setAttribute("aria-pressed",!!LS[x.dataset.act][x.dataset.o]));
+ if(!$("#v-mine").hidden)mine()});
+function mine(){const byO=o=>ALL.find(x=>x.o===o);const lat=Object.keys(LS.later).map(byO).filter(Boolean),sn=Object.keys(LS.seen).map(byO).filter(Boolean);
+ const row=(x,seen)=>`<article class="ticket"><div class="t-main"><div class="t-kind">${KIND[x.k]} · ${ORG[x.org]} · ${x.y}</div><div class="t-title">${x.t}</div><div class="t-orig">${x.o}</div>
+ ${seen?`<div class="stars" data-o="${esc(x.o)}" aria-label="تقييمك">${[1,2,3,4,5].map(s=>`<button data-s="${s}" class="${(LS.rate[x.o]||0)>=s?"on":""}" aria-label="${s} من 5">★</button>`).join("")}</div>`:""}
+ ${x.k==="s"&&!seen?`<label class="ep">وصلت للحلقة <input type="number" min="0" inputmode="numeric" data-ep="${esc(x.o)}" value="${LS.ep[x.o]||""}">${x.n?` من ${x.n}`:""}</label>`:""}
+ ${acts(x)}</div><div class="t-stub">${stub(x)}</div></article>`;
+ $("#ml").innerHTML=`<div class="res-head"><h2>سأشاهده لاحقًا (${lat.length})</h2></div>${lat.length?`<div class="tickets">${lat.map(x=>row(x,0)).join("")}</div>`:'<div class="empty">فاضية. اضغط "＋ سأشاهده لاحقًا" على أي تذكرة.</div>'}
+ <div class="res-head" style="margin-top:30px"><h2>شاهدته (${sn.length})</h2></div>${sn.length?`<div class="tickets">${sn.map(x=>row(x,1)).join("")}</div>`:'<div class="empty">ما علّمت على أي عمل بعد.</div>'}`;
+ $("#ml").querySelectorAll(".stars").forEach(s=>s.onclick=e=>{const b=e.target.closest("button");if(!b)return;LS.rate[s.dataset.o]=+b.dataset.s;saveLS();s.querySelectorAll("button").forEach(x=>x.classList.toggle("on",+x.dataset.s<=+b.dataset.s))});
+ $("#ml").querySelectorAll("[data-ep]").forEach(i=>i.onchange=()=>{const v=parseInt(i.value);if(v>0)LS.ep[i.dataset.ep]=v;else delete LS.ep[i.dataset.ep];saveLS()})}
+/* ===== ترتيب المشاهدة ===== */
+const gsel={};
+function guides(){$("#gl").innerHTML=GUIDES.map((g,gi)=>{const keys=Object.keys(g.orders),ok=gsel[gi]||keys[0],list=g.orders[ok];const done=list.filter(([t])=>LS.gd[t]).length;
+ return `<section class="panel ser"><h2>${g.n}</h2><p class="hint" style="margin:0">${g.note}</p>
+ ${keys.length>1?`<div class="ord" data-g="${gi}">${keys.map(k=>`<button class="opt" data-o="${esc(k)}" aria-pressed="${k===ok}">${k}</button>`).join("")}</div>`:'<div style="height:10px"></div>'}
+ <div class="bar" style="margin:0 0 6px"><i style="width:${done/list.length*100}%"></i></div><p class="hint" style="margin:0 0 6px">شاهدت ${done} من ${list.length}</p>
+ ${list.map(([t,y],i)=>`<label class="step${LS.gd[t]?" done":""}"><input type="checkbox" data-gt="${esc(t)}" ${LS.gd[t]?"checked":""}><span class="n">${i+1}</span><span class="t">${t}<small>${y}</small></span></label>`).join("")}</section>`}).join("")+'<p class="note">الأجزاء محفوظة على جهازك. نضيف سلاسل أكثر قريبًا.</p>';
+ $("#gl").querySelectorAll(".ord").forEach(o=>o.onclick=e=>{const b=e.target.closest(".opt");if(!b)return;gsel[o.dataset.g]=b.dataset.o;guides()});
+ $("#gl").querySelectorAll("[data-gt]").forEach(c=>c.onchange=()=>{if(c.checked)LS.gd[c.dataset.gt]=1;else delete LS.gd[c.dataset.gt];saveLS();guides()})}
+/* ===== فيلم اليوم ===== */
+{const d=new Date(),k=d.getFullYear()*1000+Math.floor((d-new Date(d.getFullYear(),0,0))/864e5),DP=ALL.filter(y=>y.f>=1),x=DP[(k*7919)%DP.length];
+ $("#daily").innerHTML=`<div class="dl"><div><small>🎬 ترشيح اليوم (${d.toLocaleDateString("ar",{day:"numeric",month:"long"})})</small><b>${x.t}</b><small>${KIND[x.k]} · ${ORG[x.org]} · ${len(x)}</small></div><button class="btn ghost" data-like="${esc(x.o)}" id="dlk">اعرض التذكرة</button></div>`;
+ $("#dlk").onclick=()=>{sel.mood=x.md[0];paint();$("#out").innerHTML=`<div class="res-head"><h2>ترشيح اليوم</h2></div><div class="tickets">${ticket(x,0)}</div>`;shown=[x];$("#out").scrollIntoView({block:"start"})}}
 /* ===== التنقل ===== */
-function route(){const hs=location.hash.slice(1);const rm=hs.match(/^room-(.+)$/);const v=rm||hs==="together"?"together":["like","family"].includes(hs)?hs:"pick";
+function route(){const hs=location.hash.slice(1);const rm=hs.match(/^room-(.+)$/);const v=rm||hs==="together"?"together":["like","family","guides","mine"].includes(hs)?hs:"pick";
+ if(v==="mine")mine();if(v==="guides")guides();
  document.querySelectorAll(".view").forEach(m=>m.hidden=m.id!=="v-"+v);
  document.querySelectorAll("nav.tabs a").forEach(a=>{if(a.dataset.v===v)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
  if(v==="together"){if(rm&&ROOM.test(rm[1]))roomJoin(rm[1]);else if(!tg.innerHTML)setup()}}
