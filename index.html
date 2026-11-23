@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>قرّرلي — شو نشوف الليلة؟</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lalezar&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: صديق سينمائي ودود يحسم الحيرة بسرعة، بلا ثرثرة
+   IDEA: شبّاك تذاكر السينما — تجيب ثلاثة أسئلة فتُطبع لك تذاكر الليلة
+   PICTURE: الأداة نفسها؛ الاقتراحات تظهر كتذاكر سينما مثقوبة الحواف
+   COLOUR and TYPE: مخمل الستارة الأحمر الداكن + أبيض الفشار + لمسة وردية حادة؛ Lalezar للعناوين و IBM Plex Sans Arabic للنص
+   LAYOUT: عمود واحد هادئ: عنوان صغير، بطاقة الأسئلة، ثم التذاكر */
+:root{color-scheme:dark;--bg:#2a0a12;--bg2:#3d0f1b;--card:#4a1322;--ink:#fff6ee;--mute:#e3c3c3;--acc:#ff5d73;--ticket:#fff6ee;--tink:#2a0a12;--line:#6b2234}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "IBM Plex Sans Arabic",Tahoma,sans-serif;overflow-x:clip;min-height:100vh;
+background-image:repeating-linear-gradient(90deg,rgba(0,0,0,.18) 0 18px,rgba(255,255,255,.025) 18px 40px),radial-gradient(ellipse at top,rgba(255,93,115,.18),transparent 60%)}
+.wrap{max-width:860px;margin:0 auto;padding:clamp(24px,4vw,48px) max(4vw,16px) 64px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+.logo{font-family:Lalezar,serif;font-size:30px;line-height:1;letter-spacing:0;display:flex;align-items:center;gap:10px}
+.logo svg{width:38px;height:38px}
+.tag{color:var(--mute);font-size:14px}
+h1{font-family:Lalezar,serif;font-weight:400;font-size:clamp(32px,6vw,48px);line-height:1.15;margin:0 0 6px;text-wrap:balance}
+.lead{color:var(--mute);margin:0 0 22px;max-width:60ch}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:clamp(18px,3vw,30px);box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.q{margin-bottom:22px}
+.q h2{font-size:17px;font-weight:700;margin:0 0 10px;display:flex;gap:8px;align-items:baseline}
+.q h2 span{color:var(--acc);font-family:Lalezar,serif;font-size:22px}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{font:inherit;font-size:15px;min-height:44px;padding:8px 16px;border-radius:999px;border:1.5px solid var(--line);background:var(--bg2);color:var(--ink);cursor:pointer;transition:background .15s,border-color .15s}
+.opt:hover{border-color:var(--acc)}
+.opt[aria-pressed=true]{background:var(--acc);border-color:var(--acc);color:#2a0a12;font-weight:700}
+.opt:focus-visible,.btn:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.btn{font:inherit;font-weight:700;min-height:48px;padding:10px 22px;border-radius:14px;border:0;cursor:pointer;background:var(--ink);color:var(--tink)}
+.btn.acc{background:var(--acc);color:#2a0a12;font-size:17px}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.hint{color:var(--mute);font-size:14px;margin:10px 0 0}
+#out{margin-top:30px}
+.res-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.res-head h2{font-family:Lalezar,serif;font-weight:400;font-size:30px;margin:0}
+.tickets{display:grid;gap:16px}
+.ticket{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 120px;background:var(--ticket);color:var(--tink);border-radius:14px;overflow:hidden;
+-webkit-mask:radial-gradient(circle 12px at 120px 0,#0000 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 12px at 120px 100%,#0000 98%,#000) bottom/100% 51% no-repeat;
+mask:radial-gradient(circle 12px at 120px 0,#0000 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 12px at 120px 100%,#0000 98%,#000) bottom/100% 51% no-repeat;
+animation:print .5s ease-out both}
+.ticket:nth-child(2){animation-delay:.08s}.ticket:nth-child(3){animation-delay:.16s}
+@keyframes print{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.t-main{padding:18px 20px}
+.t-kind{font-size:13px;font-weight:700;color:#a3253c}
+.t-title{font-family:Lalezar,serif;font-size:28px;line-height:1.15;margin:2px 0}
+.t-orig{font-size:14px;color:#6b4a4f;direction:ltr;text-align:right}
+.t-why{margin:10px 0 12px;font-size:15.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:13px;padding:3px 10px;border-radius:999px;background:#f3dfd6;white-space:nowrap}
+.chip.fam2{background:#cdeccf}.chip.fam1{background:#fbe7b5}.chip.fam0{background:#f6c4c4}
+.t-stub{border-inline-start:2px dashed #d7b9b0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:12px;text-align:center;background:#fbeee6}
+.t-stub b{font-family:Lalezar,serif;font-size:34px;line-height:1;color:#a3253c}
+.t-stub small{font-size:13px;color:#6b4a4f}
+.ticket.win{outline:4px solid var(--acc);outline-offset:-4px}
+.ticket.dim{opacity:.35;filter:grayscale(.6)}
+.spot{margin-top:16px;padding:16px 18px;border-radius:14px;background:var(--bg2);border:1px dashed var(--acc);font-size:17px}
+.empty{padding:22px;border-radius:14px;background:var(--bg2);text-align:center}
+.note{color:var(--mute);font-size:13px;margin-top:22px}
+
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 22px;padding:5px;background:var(--bg2);border:1px solid var(--line);border-radius:16px;width:fit-content;max-width:100%}
+nav.tabs a{color:var(--ink);text-decoration:none;font-weight:700;padding:10px 18px;border-radius:12px;min-height:44px;display:flex;align-items:center}
+nav.tabs a[aria-current=page]{background:var(--acc);color:#2a0a12}
+nav.tabs a:focus-visible{outline:3px solid #fff}
+.view[hidden]{display:none}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.code{font-family:Lalezar,serif;font-size:40px;letter-spacing:2px;direction:ltr;background:var(--ticket);color:var(--tink);padding:4px 18px;border-radius:12px;display:inline-block}
+.field{font:inherit;font-size:16px;min-height:46px;padding:8px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg2);color:var(--ink);width:100%}
+textarea.field{min-height:120px;direction:ltr;text-align:left}
+.box{margin-top:18px;padding:16px;border-radius:14px;background:var(--bg2);border:1px solid var(--line)}
+.box h3{margin:0 0 8px;font-size:17px}
+.deck{position:relative;max-width:440px;margin:0 auto;touch-action:pan-y}
+.prog{text-align:center;color:var(--mute);margin-bottom:10px;font-weight:700}
+.bar{height:6px;border-radius:9px;background:var(--bg2);overflow:hidden;margin-bottom:14px}.bar i{display:block;height:100%;background:var(--acc);transition:width .25s}
+.scard{background:var(--ticket);color:var(--tink);border-radius:20px;padding:22px;min-height:300px;box-shadow:0 18px 40px rgba(0,0,0,.4);cursor:grab;user-select:none;position:relative;transition:transform .25s,opacity .25s}
+.scard.drag{transition:none;cursor:grabbing}
+.scard .t-title{font-size:34px}
+.stamp{position:absolute;top:18px;font-family:Lalezar,serif;font-size:30px;padding:2px 14px;border:4px solid;border-radius:10px;opacity:0;transform:rotate(-12deg)}
+.stamp.yes{left:18px;color:#1f8a4c}.stamp.no{right:18px;color:#c0283f;transform:rotate(12deg)}
+.vote{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.vote .btn{min-height:56px;font-size:18px}
+.btn.no{background:#fff;color:#c0283f;border:2px solid #c0283f}.btn.yes{background:#1f8a4c;color:#fff}
+.votes{font-family:Lalezar,serif;font-size:30px;color:#a3253c}
+.all{background:#cdeccf;color:#14532d;font-weight:700}
+
+.judge{margin-top:16px;padding:22px 18px;border-radius:18px;background:var(--ticket);color:var(--tink);text-align:center}
+.gavel{font-size:44px;line-height:1;display:inline-block;transform-origin:70% 70%;animation:bang .35s ease-in-out 4 alternate}
+.judge.on .gavel{animation:none}
+@keyframes bang{from{transform:rotate(0)}to{transform:rotate(-35deg)}}
+.j-lbl{margin:6px 0 0;font-weight:700;color:#a3253c}
+.j-title{font-family:Lalezar,serif;font-size:clamp(30px,7vw,42px);line-height:1.15;margin:2px 0 6px}
+.j-why{margin:0 0 6px}.j-end{margin:0;font-size:14px;color:#6b4a4f}
+@media(prefers-reduced-motion:reduce){.gavel{animation:none}}
+
+.qk{font:inherit;font-size:14px;background:none;border:0;color:var(--ink);text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:6px 4px;min-height:32px}
+.lk{font:inherit;font-size:14px;font-weight:700;background:none;border:0;color:#a3253c;cursor:pointer;padding:6px 0;margin-top:6px;min-height:36px}
+.src{display:flex;gap:12px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.src b{font-family:Lalezar,serif;font-weight:400;font-size:26px}
+@media(max-width:600px){.ticket{grid-template-columns:minmax(0,1fr) 88px;
+-webkit-mask:radial-gradient(circle 10px at 88px 0,#0000 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 10px at 88px 100%,#0000 98%,#000) bottom/100% 51% no-repeat;
+mask:radial-gradient(circle 10px at 88px 0,#0000 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 10px at 88px 100%,#0000 98%,#000) bottom/100% 51% no-repeat}
+.t-title{font-size:23px}.t-stub b{font-size:26px}.t-main{padding:14px}}
+@media(prefers-reduced-motion:reduce){.ticket{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="logo"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8 14h24l-3 22H11z" fill="#fff6ee"/><path d="M8 14h24l-.6 4H8.6z" fill="#ff5d73"/><path d="M14 14l1.5 22M20 14v22M26 14l-1.5 22" stroke="#ff5d73" stroke-width="2.4"/><circle cx="13" cy="10" r="4" fill="#fff6ee"/><circle cx="20" cy="8" r="5" fill="#fff6ee"/><circle cx="27" cy="10" r="4" fill="#fff6ee"/></svg>قرّرلي</div>
+  <div class="tag">نختار لك في 30 ثانية</div>
+</header>
+<nav class="tabs" aria-label="أقسام الموقع"><a href="#pick" data-v="pick">قرّرلي أنا</a><a href="#together" data-v="together">اختاروا معًا</a><a href="#like" data-v="like">أفلام تشبه…</a></nav>
+<main id="v-pick" class="view">
+
+<h1>محتار شو تشوف الليلة؟</h1>
+<p class="lead">جاوب على أربعة أسئلة سريعة، ونطبع لك ثلاث تذاكر فقط تناسب مزاجك ووقتك ومن معك.</p>
+
+<section class="panel" aria-label="أسئلة الاختيار">
+  <div class="q" data-k="mood"><h2><span>١</span>كيف مزاجك الآن؟</h2><div class="opts">
+    <button class="opt" data-v="c">بدي أضحك</button><button class="opt" data-v="e">شي يلمس القلب</button><button class="opt" data-v="a">حماس وأكشن</button><button class="opt" data-v="m">لغز وتفكير</button><button class="opt" data-v="h">رعب وتشويق</button><button class="opt" data-v="i">شي ملهم</button><button class="opt" data-v="z">هادئ ومريح</button>
+  </div></div>
+  <div class="q" data-k="who"><h2><span>٢</span>مع مين بتشوف؟</h2><div class="opts">
+    <button class="opt" data-v="solo">لحالي</button><button class="opt" data-v="fam">مع العائلة والأطفال</button><button class="opt" data-v="friends">مع الأصحاب</button><button class="opt" data-v="couple">مع الزوج أو الزوجة</button>
+  </div></div>
+  <div class="q" data-k="time"><h2><span>٣</span>قديش معك وقت؟</h2><div class="opts">
+    <button class="opt" data-v="short">فيلم قصير (أقل من 100 دقيقة)</button><button class="opt" data-v="film">فيلم عادي</button><button class="opt" data-v="mini">مسلسل قصير (10 حلقات أو أقل)</button><button class="opt" data-v="long">مسلسل طويل</button><button class="opt" data-v="any">ما بتفرق</button>
+  </div></div>
+  <div class="q" data-k="origin"><h2><span>٤</span>شو بتحب؟</h2><div class="opts">
+    <button class="opt" data-v="ar">عربي</button><button class="opt" data-v="tr">تركي</button><button class="opt" data-v="kr">كوري</button><button class="opt" data-v="en">أجنبي</button><button class="opt" data-v="an">أنمي ورسوم</button><button class="opt" data-v="any">ما بتفرق</button>
+  </div></div>
+  <div class="actions"><button class="btn acc" id="go">اطبع تذاكري</button><button class="btn ghost" id="reset">ابدأ من جديد</button></div>
+  <p class="hint" id="hint">اختر المزاج على الأقل، والباقي إذا حبيت.</p>
+</section>
+
+<section id="out" aria-live="polite"></section>
+</main>
+<main id="v-like" class="view" hidden>
+<h1>أفلام تشبه…</h1>
+<p class="lead">اكتب فيلمًا أو مسلسلًا حبيته، ونطلع لك أعمالًا بنفس الروح، مع سبب التشابه.</p>
+<section class="panel"><label for="lq" style="font-weight:700;display:block;margin-bottom:8px">شو العمل اللي حبيته؟</label>
+<div class="row"><input id="lq" class="field" list="ltitles" placeholder="مثلًا: استهلال أو Inception" autocomplete="off" style="flex:1 1 240px"><button class="btn acc" id="lgo">اعرض المشابه</button></div>
+<datalist id="ltitles"></datalist>
+<p class="hint">أو جرّب: <span id="lquick"></span></p></section>
+<section id="lout" aria-live="polite" style="margin-top:26px"></section>
+</main>
+<main id="v-together" class="view" hidden>
+<h1>اختاروا معًا</h1>
+<p class="lead">كل واحد يقلّب نفس البطاقات: "بشوفه" أو "لا". وبالآخر نطلع لكم العمل اللي اتفقتم عليه، بلا نقاش ولا زعل.</p>
+<div id="tg"></div>
+</main>
+
+<p class="note">نسخة تجريبية: القائمة الحالية فيها 60 عملًا مختارًا يدويًا، وتصنيف "مناسب للعائلة" مبدئي وسيُفصَّل لاحقًا (عنف، ألفاظ، مشاهد).</p>
+</div>
+
+<script>
+{
+// [عنوان عربي, الاسم الأصلي, السنة, نوع m/s, مدة بالدقائق أو عدد حلقات, مواسم, الأصل, أمزجة, العائلة 2/1/0, لماذا نرشحه]
+const D=[
+["حكاية لعبة","Toy Story",1995,"m",81,0,"an","cz",2,"بداية بيكسار وما زال يضحك الكبار قبل الصغار."],
+["فوق","Up",2009,"m",96,0,"an","ezc",2,"أول عشر دقائق منه وحدها تستحق المشاهدة، ثم مغامرة خفيفة مضحكة."],
+["كوكو","Coco",2017,"m",105,0,"an","ez",2,"عن العائلة والذكريات، وختامه يُبكي الجميع بلطف."],
+["قلباً وقالباً","Inside Out",2015,"m",95,0,"an","ecm",2,"يشرح المشاعر بطريقة ذكية يفهمها الطفل ويتأملها الكبير."],
+["البحث عن نيمو","Finding Nemo",2003,"m",100,0,"an","cz",2,"مغامرة بحرية ملونة وشخصية دوري لا تُنسى."],
+["زوتوبيا","Zootopia",2016,"m",108,0,"an","cm",2,"قصة تحقيق مضحكة بين حيوانات المدينة."],
+["بادينغتون 2","Paddington 2",2017,"m",103,0,"en","cz",2,"من ألطف الأفلام العائلية، دفء وضحك بلا أي إحراج."],
+["الأسد الملك","The Lion King",1994,"m",88,0,"an","ei",2,"كلاسيكية لا تكبر، قصيرة ومناسبة لكل الأعمار."],
+["المخطوفة","Spirited Away",2001,"m",125,0,"an","zm",2,"عالم ياباني ساحر، تحفة الأنمي الأشهر."],
+["الفأر الطباخ","Ratatouille",2007,"m",111,0,"an","ciz",2,"عن الحلم والشغف، ويفتح الشهية حرفيًا."],
+["وول-إي","WALL-E",2008,"m",98,0,"an","ez",2,"روبوت صغير بلا كلام تقريبًا ويحكي الكثير."],
+["جاري توتورو","My Neighbor Totoro",1988,"m",86,0,"an","z",2,"فيلم هادئ ومريح جدًا، مثالي قبل نوم الأطفال."],
+["قبر اليراعات","Grave of the Fireflies",1988,"m",89,0,"an","e",1,"قصير لكنه من أكثر الأفلام إيلامًا؛ جهّز نفسك."],
+["اسمك","Your Name",2016,"m",106,0,"an","em",1,"لغز رومانسي بصور مذهلة ونهاية تستحق الانتظار."],
+["كونغ فو باندا","Kung Fu Panda",2008,"m",92,0,"an","ca",2,"ضحك وأكشن مع رسالة جميلة عن الثقة بالنفس."],
+["سبايدرمان: في عالم العنكبوت","Spider-Man: Into the Spider-Verse",2018,"m",117,0,"an","ai",2,"أكشن بأسلوب رسم مختلف عن أي فيلم شفته."],
+["كلاوس","Klaus",2019,"m",96,0,"an","cez",2,"قصة دافئة عن ساعي بريد وصداقة غير متوقعة."],
+["روح","Soul",2020,"m",100,0,"an","eim",2,"يجعلك تفكر في معنى حياتك اليومية بخفة."],
+["إنكانتو","Encanto",2021,"m",102,0,"an","cz",2,"عائلة سحرية وأغانٍ يرددها الأطفال لأيام."],
+["الرسالة","The Message",1976,"m",177,0,"ar","ie",2,"الفيلم الأشهر عن بداية الإسلام، مناسب لسهرة عائلية طويلة."],
+["عمر المختار","Lion of the Desert",1981,"m",173,0,"ar","ia",1,"ملحمة مقاومة حقيقية، حماس وكرامة."],
+["وجدة","Wadjda",2012,"m",98,0,"ar","iz",2,"بنت سعودية تحلم بدراجة؛ بسيط وصادق وقصير."],
+["ذيب","Theeb",2014,"m",100,0,"ar","am",1,"مغامرة في صحراء الحجاز بعيون طفل بدوي."],
+["كفرناحوم","Capernaum",2018,"m",126,0,"ar","e",1,"قصة طفل في بيروت تهز القلب؛ ثقيل لكنه مهم."],
+["الخلاص من شاوشانك","The Shawshank Redemption",1994,"m",142,0,"en","ie",0,"عن الأمل في أسوأ مكان، من أعلى الأفلام تقييمًا."],
+["فورست غامب","Forrest Gump",1994,"m",142,0,"en","eci",1,"رحلة حياة كاملة تضحكك وتبكيك."],
+["السعي وراء السعادة","The Pursuit of Happyness",2006,"m",117,0,"en","ie",1,"أب يكافح مع ابنه؛ جرعة تحفيز حقيقية."],
+["المنبوذون","The Intouchables",2011,"m",112,0,"en","ce",0,"صداقة غير متوقعة، ضحك حقيقي بقصة واقعية."],
+["أخرجوا السكاكين","Knives Out",2019,"m",130,0,"en","mc",1,"لغز جريمة ذكي ومسلٍّ، خمّن القاتل قبل النهاية."],
+["استهلال","Inception",2010,"m",148,0,"en","ma",1,"أحلام داخل أحلام؛ ركّز ولا تمسك جوالك."],
+["بين النجوم","Interstellar",2014,"m",169,0,"en","mei",1,"فضاء وزمن وأب يحاول العودة لابنته."],
+["المريخي","The Martian",2015,"m",144,0,"en","ic",1,"عالِم عالق على المريخ يواجه الموت بالعلم والنكتة."],
+["الهيبة","The Prestige",2006,"m",130,0,"en","m",1,"صراع ساحرين، ونهاية تقلب كل شيء."],
+["فارس الظلام","The Dark Knight",2008,"m",152,0,"en","am",1,"أفضل أفلام الأبطال الخارقين وأقواها شريرًا."],
+["توب غن: مافريك","Top Gun: Maverick",2022,"m",130,0,"en","ai",1,"طيران وحماس من أول دقيقة لآخرها."],
+["ماد ماكس: طريق الغضب","Mad Max: Fury Road",2015,"m",120,0,"en","a",0,"مطاردة واحدة طويلة بلا توقف."],
+["جون ويك","John Wick",2014,"m",101,0,"en","a",0,"أكشن نظيف وسريع لمحبي القتال."],
+["المصارع","Gladiator",2000,"m",155,0,"en","ae",0,"انتقام ملحمي في روما القديمة."],
+["هاتشي: حكاية كلب","Hachi: A Dog's Tale",2009,"m",93,0,"en","e",2,"وفاء كلب لصاحبه؛ جهّز المناديل."],
+["وحدي في المنزل","Home Alone",1990,"m",103,0,"en","c",2,"كوميديا عائلية مضمونة الضحك."],
+["ساعة الذروة","Rush Hour",1998,"m",98,0,"en","ca",1,"جاكي شان وكريس تاكر، أكشن وضحك مع الأصحاب."],
+["المحطة","The Terminal",2004,"m",128,0,"en","cz",1,"رجل عالق في مطار، قصة خفيفة ولطيفة."],
+["12 رجلاً غاضباً","12 Angry Men",1957,"m",96,0,"en","m",2,"غرفة واحدة ونقاش يحبس الأنفاس."],
+["حياة باي","Life of Pi",2012,"m",127,0,"en","mz",2,"شاب ونمر في قارب وسط المحيط، صور مذهلة."],
+["أرقام خفية","Hidden Figures",2016,"m",127,0,"en","i",2,"قصة حقيقية لعالمات رياضيات غيّرن تاريخ الفضاء."],
+["امسكني إن استطعت","Catch Me If You Can",2002,"m",141,0,"en","cm",1,"محتال شاب ومطاردة ممتعة مبنية على قصة حقيقية."],
+["أخرج","Get Out",2017,"m",104,0,"en","hm",0,"رعب ذكي يعتمد على التوتر لا على الدم."],
+["مكان هادئ","A Quiet Place",2018,"m",90,0,"en","h",1,"أي صوت يعني الموت؛ قصير ومشدود."],
+["الشعوذة","The Conjuring",2013,"m",112,0,"en","h",0,"رعب كلاسيكي لمن يحب أن يخاف فعلًا."],
+["طفيلي","Parasite",2019,"m",132,0,"kr","mh",0,"فائز بالأوسكار، يبدأ كوميديا وينتهي صادمًا."],
+["قيامة أرطغرل","Diriliş: Ertuğrul",2014,"s",0,5,"tr","ai",1,"ملحمة تاريخية طويلة تعيش معها شهورًا."],
+["عمر","Omar",2012,"s",30,1,"ar","ie",2,"سيرة الفاروق في 30 حلقة، مناسب للعائلة."],
+["التغريبة الفلسطينية","Al-Taghreba Al-Falastenya",2004,"s",31,1,"ar","e",1,"حكاية النكبة من خلال عائلة واحدة؛ من أعظم ما قُدّم عربيًا."],
+["ما وراء الطبيعة","Paranormal",2020,"s",6,1,"ar","hm",1,"رعب مصري قصير من روايات أحمد خالد توفيق."],
+["ضيعة ضايعة","Dayaa Dayaa",2008,"s",0,2,"ar","cz",2,"كوميديا سورية ريفية يضحك عليها الجميع."],
+["هبوط اضطراري للحب","Crash Landing on You",2019,"s",16,1,"kr","cez",1,"رومانسية كورية مضحكة بين الكوريتين."],
+["المحامية الاستثنائية وو","Extraordinary Attorney Woo",2022,"s",16,1,"kr","czi",1,"محامية مصابة بالتوحد وقضايا ممتعة كل حلقة."],
+["رد 1988","Reply 1988",2015,"s",20,1,"kr","cez",1,"خمس عائلات في حي واحد، دفء وحنين."],
+["انتقال إلى الجنة","Move to Heaven",2021,"s",10,1,"kr","e",1,"شاب ينظف بيوت الموتى ويكشف قصصهم؛ مؤثر جدًا."],
+["المملكة","Kingdom",2019,"s",12,2,"kr","ha",0,"زومبي في كوريا القديمة، رعب وسياسة."],
+["لعبة الحبار","Squid Game",2021,"s",22,3,"kr","ha",0,"ألعاب أطفال بنهايات مميتة."],
+["مذكرة الموت","Death Note",2006,"s",37,1,"an","mh",1,"صراع عقول بين قاتل ومحقق عبقري."],
+["الخيميائي المعدني: الأخوية","Fullmetal Alchemist: Brotherhood",2009,"s",64,1,"an","aei",1,"من أفضل الأنمي على الإطلاق، قصة مكتملة."],
+["أفاتار: آخر مسخّري الهواء","Avatar: The Last Airbender",2005,"s",61,3,"an","aci",2,"مغامرة عائلية بقصة ناضجة تناسب الكبار أيضًا."],
+["مستر بين","Mr. Bean",1990,"s",15,1,"en","c",2,"ضحك بلا كلام، يناسب كل الأعمار واللغات."],
+["كوكب الأرض 2","Planet Earth II",2016,"s",6,1,"en","zi",2,"وثائقي طبيعة بصور لا تُصدق، ممتاز للعائلة."],
+["كوكبنا","Our Planet",2019,"s",8,1,"en","zi",2,"جولة في جمال الطبيعة بصوت ديفيد أتينبارا."],
+["شيرلوك","Sherlock",2010,"s",13,4,"en","ma",1,"ألغاز شيرلوك هولمز في لندن الحديثة."],
+["مناورة الملكة","The Queen's Gambit",2020,"s",7,1,"en","im",0,"فتاة عبقرية في الشطرنج؛ قصير ومشوّق."],
+["تشيرنوبل","Chernobyl",2019,"s",5,1,"en","mh",0,"الكارثة النووية كما حدثت؛ خمس حلقات لا تُنسى."],
+["عصابة الإخوة","Band of Brothers",2001,"s",10,1,"en","ae",0,"الحرب العالمية الثانية بعيون كتيبة واحدة."],
+["بريكنغ باد","Breaking Bad",2008,"s",62,5,"en","ma",0,"من أعظم المسلسلات؛ تحوّل مدرس إلى مجرم."],
+["دارك","Dark",2017,"s",26,3,"en","mh",0,"لغز سفر عبر الزمن يحتاج تركيزًا كاملًا."],
+["الأصدقاء","Friends",1994,"s",236,10,"en","c",0,"ستة أصدقاء في نيويورك، ضحك خفيف لا ينتهي."]
+];
+const KIND={m:"فيلم",s:"مسلسل"};
+const ORG={ar:"عربي",tr:"تركي",kr:"كوري",en:"أجنبي",an:"أنمي ورسوم"};
+const FAM={2:["مناسب للعائلة","fam2"],1:["للمراهقين فما فوق","fam1"],0:["للكبار فقط","fam0"]};
+const MOODS={c:"كوميدي",e:"مؤثر",a:"أكشن",m:"لغز",h:"رعب",i:"ملهم",z:"مريح"};
+const sel={mood:null,who:null,time:null,origin:null};
+const $=s=>document.querySelector(s),out=$("#out");
+let pool=[],shown=[];
+function load(){try{const s=JSON.parse(localStorage.getItem("ft-sel")||"{}");Object.assign(sel,s)}catch(e){}}
+function save(){try{localStorage.setItem("ft-sel",JSON.stringify(sel))}catch(e){}}
+function paint(){document.querySelectorAll(".q").forEach(q=>{const k=q.dataset.k;q.querySelectorAll(".opt").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===sel[k]))})}
+document.querySelectorAll(".q").forEach(q=>q.addEventListener("click",e=>{const b=e.target.closest(".opt");if(!b)return;const k=q.dataset.k;sel[k]=sel[k]===b.dataset.v?null:b.dataset.v;paint();save()}));
+const obj=r=>({t:r[0],o:r[1],y:r[2],k:r[3],n:r[4],s:r[5],org:r[6],md:r[7],f:r[8],why:r[9]});
+function fitTime(x,t){if(!t||t==="any")return true;
+ if(t==="short")return x.k==="m"&&x.n<100;if(t==="film")return x.k==="m"&&x.n<=180;
+ if(t==="mini")return x.k==="s"&&x.n>0&&x.n<=10;if(t==="long")return x.k==="s"&&(x.n===0||x.n>10);return true}
+function build(){const all=D.map(obj);
+ const pass=(x,useT,useO)=>(sel.who!=="fam"||x.f===2)&&(!useT||fitTime(x,sel.time))&&(!useO||!sel.origin||sel.origin==="any"||x.org===sel.origin);
+ let relaxed="";let list=all.filter(x=>pass(x,1,1));
+ if(list.length<3){list=all.filter(x=>pass(x,1,0));relaxed="لم نجد ما يكفي من النوع الذي اخترته، فأضفنا أعمالًا من أصول أخرى."}
+ if(list.length<3){list=all.filter(x=>pass(x,0,0));relaxed="وسّعنا البحث قليلًا لأن الخيارات المطابقة تمامًا قليلة."}
+ const score=x=>(x.md.includes(sel.mood)?10:0)+(x.md[0]===sel.mood?3:0)+(sel.who==="couple"&&x.md.includes("e")?1:0)+(sel.who==="friends"&&/[cah]/.test(x.md)?1:0)+Math.random()*2;
+ list=list.map(x=>({x,s:score(x)})).sort((a,b)=>b.s-a.s);
+ const top=list.filter(r=>r.s>=10);pool=(top.length>=3?top:list).map(r=>r.x);return relaxed}
+function len(x){if(x.k==="m"){const h=Math.floor(x.n/60),m=x.n%60;return [h?h+" س":"",m?m+" د":""].filter(Boolean).join(" ")}
+ return x.n?x.n+" حلقة":x.s+" مواسم"}
+function stub(x){return x.k==="m"?`<b>${x.n}</b><small>دقيقة</small>`:(x.n?`<b>${x.n}</b><small>حلقة</small>`:`<b>${x.s}</b><small>مواسم</small>`)}
+function ticket(x,i){const fm=FAM[x.f];return `<article class="ticket" data-i="${i}"><div class="t-main"><div class="t-kind">${KIND[x.k]} · ${ORG[x.org]} · ${x.y}</div><div class="t-title">${x.t}</div><div class="t-orig">${x.o}</div><p class="t-why">${x.why}</p><div class="chips"><span class="chip ${fm[1]}">${fm[0]}</span>${[...x.md].map(m=>`<span class="chip">${MOODS[m]}</span>`).join("")}<span class="chip">${len(x)}</span></div><button class="lk" data-like="${esc(x.o)}">أعمال تشبهه ←</button></div><div class="t-stub">${stub(x)}</div></article>`}
+function next(){if(pool.length<3)build();shown=pool.splice(0,3);return shown}
+function render(note){const t=next();
+ out.innerHTML=`<div class="res-head"><h2>تذاكرك الليلة</h2><div class="actions" style="margin:0"><button class="btn acc" id="pick">اختر لي واحدًا فقط</button><button class="btn ghost" id="more">اقتراحات أخرى</button></div></div>${note?`<p class="hint" style="margin:0 0 12px">${note}</p>`:""}<div class="tickets">${t.map(ticket).join("")}</div><div id="spot"></div>`;
+ $("#more").onclick=()=>render("");$("#pick").onclick=pick;out.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"start"})}
+function pick(){const cards=[...document.querySelectorAll(".ticket")];if(!cards.length)return;
+ const win=Math.floor(Math.random()*cards.length);let i=0,steps=8+win;const btn=$("#pick");btn.disabled=true;
+ const fast=matchMedia("(prefers-reduced-motion:reduce)").matches;
+ const tick=()=>{cards.forEach((c,j)=>{c.classList.toggle("win",j===i%cards.length);c.classList.remove("dim")});
+  if(i<steps&&!fast){i++;setTimeout(tick,90+i*18)}else{i=win;cards.forEach((c,j)=>{c.classList.toggle("win",j===win);c.classList.toggle("dim",j!==win)});
+   $("#spot").innerHTML=`<div class="spot">خلص، الليلة نشوف <b>${shown[win].t}</b>. لا تفكر أكثر، شغّله الآن!</div>`;btn.disabled=false}};
+ tick()}
+$("#go").onclick=()=>{if(!sel.mood){$("#hint").textContent="اختر مزاجك أولًا، هذا أهم سؤال.";$("#hint").style.color="var(--acc)";return}
+ $("#hint").textContent="اختر المزاج على الأقل، والباقي إذا حبيت.";$("#hint").style.color="";pool=[];const n=build();render(n)};
+$("#reset").onclick=()=>{for(const k in sel)sel[k]=null;paint();save();out.innerHTML=""};
+load();paint();
+
+/* ===== اختاروا معًا ===== */
+const tg=$("#tg"),N=15;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function rng(str){let h=1779033703^str.length;for(let i=0;i<str.length;i++){h=Math.imul(h^str.charCodeAt(i),3432918353);h=h<<13|h>>>19}
+ return()=>{h=Math.imul(h^h>>>16,2246822507);h=Math.imul(h^h>>>13,3266489909);h^=h>>>16;return(h>>>0)/4294967296}}
+const ROOM=/^([a-z0-9]{4})-([msb])([01])$/;
+function deck(code){const m=code.match(ROOM);if(!m)return null;const r=rng(code);
+ let l=D.map(obj).filter(x=>(m[2]==="b"||x.k===m[2])&&(m[3]==="0"||x.f===2));
+ for(let i=l.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[l[i],l[j]]=[l[j],l[i]]}return l.slice(0,N)}
+const st={kind:"b",fam:"0",mode:"room",players:"3"};
+function optRow(k,arr){return `<div class="opts" data-k="${k}">${arr.map(([v,t])=>`<button class="opt" data-v="${v}" aria-pressed="${st[k]===v}">${t}</button>`).join("")}</div>`}
+function bindOpts(){tg.querySelectorAll(".opts[data-k]").forEach(o=>o.onclick=e=>{const b=e.target.closest(".opt");if(!b)return;st[o.dataset.k]=b.dataset.v;o.querySelectorAll(".opt").forEach(x=>x.setAttribute("aria-pressed",x===b));const pp=$("#pp");if(pp)pp.hidden=st.mode!=="pass"})}
+function setup(msg){tg.innerHTML=`<section class="panel">
+ ${msg?`<p class="hint" style="margin:0 0 14px;color:var(--acc)">${msg}</p>`:""}
+ <div class="q"><h2><span>١</span>شو بدكم تشوفوا؟</h2>${optRow("kind",[["m","أفلام"],["s","مسلسلات"],["b","الاثنين"]])}</div>
+ <div class="q"><h2><span>٢</span>في أطفال معكم؟</h2>${optRow("fam",[["1","نعم، فقط المناسب للعائلة"],["0","لا"]])}</div>
+ <div class="q"><h2><span>٣</span>كيف بدكم تلعبوا؟</h2>${optRow("mode",[["room","كل واحد من جواله"],["pass","جوال واحد نمرّره بيننا"]])}</div>
+ <div class="q" id="pp" ${st.mode==="pass"?"":"hidden"}><h2><span>٤</span>كم شخص؟</h2>${optRow("players",[["2","٢"],["3","٣"],["4","٤"],["5","٥"],["6","٦"]])}</div>
+ <div class="actions"><button class="btn acc" id="tgo">يلا نبدأ</button></div>
+ <div class="box"><h3>⚖️ مختلفين على أفلام بعينها؟ خلّي قرّرلي يحكم</h3><p class="hint" style="margin:0 0 8px">كل واحد يكتب الفيلم أو المسلسل اللي بدّه إياه، كل اسم بسطر.</p>
+ <textarea class="field" id="jlist" style="direction:rtl;text-align:right;min-height:100px" placeholder="مثلًا:&#10;قيامة أرطغرل&#10;الرسالة&#10;Inception"></textarea>
+ <div class="actions" style="margin-top:10px"><button class="btn acc" id="jbtn">احكم بيننا</button></div><div id="jout"></div></div>
+ <div class="box"><h3>عندك كود غرفة من صاحبك؟</h3><div class="row"><input class="field" id="jcode" placeholder="مثال: x7k2-m1" style="max-width:220px;direction:ltr" autocomplete="off"><button class="btn" id="jgo">ادخل الغرفة</button></div></div>
+ </section>`;bindOpts();
+ $("#tgo").onclick=()=>{const code=Math.random().toString(36).slice(2,6).padEnd(4,"0")+"-"+st.kind+st.fam;
+  if(st.mode==="pass")passStart(code,+st.players);else roomHost(code)};
+ $("#jbtn").onclick=()=>{const l=[...new Set($("#jlist").value.split(/\n+/).map(s=>s.trim()).filter(Boolean))];
+  if(l.length<2){$("#jout").innerHTML='<p class="hint" style="color:var(--acc)">اكتبوا خيارين على الأقل، كل واحد بسطر.</p>';return}
+  const w=l[Math.floor(Math.random()*l.length)];verdict($("#jout"),w,`كان عندكم ${l.length} خيارات، وسحبت قرعة عادلة بينها؛ ما في خيار أخذ فرصة أكثر من غيره.`,$("#jbtn"))};
+ $("#jgo").onclick=()=>{const c=$("#jcode").value.trim().toLowerCase();if(!ROOM.test(c)){setup("الكود غير صحيح. شكله مثل: x7k2-m1");return}roomJoin(c)}}
+async function copy(t,btn){try{await navigator.clipboard.writeText(t);btn.textContent="تم النسخ ✓"}catch(e){btn.textContent="انسخه يدويًا"}}
+function roomHost(code){tg.innerHTML=`<section class="panel"><h2 style="margin-top:0">غرفتكم جاهزة</h2>
+ <p>ابعث هذا الكود لأصحابك على واتساب. كل واحد يفتح الموقع ← "اختاروا معًا" ← يكتب الكود.</p>
+ <div class="row"><span class="code">${code}</span><button class="btn ghost" id="cp">انسخ رسالة الدعوة</button></div>
+ <div class="actions" style="margin-top:18px"><button class="btn acc" id="go2">ابدأ التقليب</button></div></section>`;
+ const msg=`تعالوا نختار شو نشوف الليلة 🎬\nافتح موقع قرّرلي ← "اختاروا معًا" ← ادخل الكود: ${code}`;
+ $("#cp").onclick=e=>copy(msg,e.target);$("#go2").onclick=()=>swipe(code,"أنت",lk=>roomDone(code,lk))}
+function roomJoin(code){swipe(code,"أنت",lk=>roomDone(code,lk))}
+const enc=lk=>lk.reduce((a,v,i)=>a+(v?2**i:0),0).toString(36);
+const dec=(s,n)=>{const v=parseInt(s,36);return Array.from({length:n},(_,i)=>Math.floor(v/2**i)%2===1)};
+function roomDone(code,lk){const my=code+"."+enc(lk);
+ tg.innerHTML=`<section class="panel"><h2 style="margin-top:0">خلصت! 👏</h2>
+ <p>ابعث كود اختياراتك لصاحب الغرفة، أو اجمع أكواد الكل هنا إذا أنت صاحب الغرفة.</p>
+ <div class="row"><span class="code" style="font-size:28px">${my}</span><button class="btn ghost" id="cp">انسخ كودي</button></div>
+ <div class="box"><h3>جمع النتائج</h3><p class="hint" style="margin:0 0 8px">الصق هنا أكواد أصحابك (كل كود بسطر، ويمكن تكتب الاسم قبله مثل: أحمد: ${code}.3f2)</p>
+ <textarea class="field" id="codes" placeholder="أحمد: ${code}.abc"></textarea>
+ <div class="actions" style="margin-top:10px"><button class="btn acc" id="calc">طلّع النتيجة</button></div><p class="hint" id="err"></p></div></section>`;
+ $("#cp").onclick=e=>copy(my,e.target);
+ $("#calc").onclick=()=>{const d=deck(code),names=["أنت"],votes=[lk];let bad=0;
+  $("#codes").value.split(/\n+/).map(s=>s.trim()).filter(Boolean).forEach(line=>{const m=line.match(/([a-z0-9]{4}-[msb][01])\.([a-z0-9]+)/i);
+   if(!m||m[1].toLowerCase()!==code){bad++;return}const nm=line.slice(0,m.index).replace(/[:：\-\s]+$/,"").trim();names.push(nm||"صاحب "+names.length);votes.push(dec(m[2].toLowerCase(),d.length))});
+  if(votes.length<2){$("#err").textContent=bad?"بعض الأكواد ليست من هذه الغرفة.":"الصق كود صاحب واحد على الأقل.";return}results(d,votes,names,bad)}}
+function passStart(code,n){const votes=[],names=[];let i=0;
+ const turn=()=>{if(i>=n){results(deck(code),votes,names,0);return}
+  tg.innerHTML=`<section class="panel" style="text-align:center"><p class="hint" style="margin:0">الشخص ${i+1} من ${n}</p><h2 style="font-family:Lalezar,serif;font-weight:400;font-size:34px;margin:6px 0">${i?"سلّم الجوال للي بعدك 👋":"يلا أول واحد"}</h2>
+  <p>ولا تتطلعوا على اختيارات بعض!</p><input class="field" id="nm" placeholder="اسمك (اختياري)" style="max-width:280px;margin:8px auto;display:block;text-align:center"><div class="actions" style="justify-content:center"><button class="btn acc" id="st">أنا جاهز</button></div></section>`;
+  $("#st").onclick=()=>{const nm=$("#nm").value.trim()||"الشخص "+(i+1);swipe(code,nm,lk=>{votes.push(lk);names.push(nm);i++;turn()})}};turn()}
+function swipe(code,who,done){const d=deck(code);if(!d||!d.length){setup("ما في أعمال كافية بهذه الخيارات، جرّب خيارات أوسع.");return}
+ const lk=[];let i=0;
+ const draw=()=>{if(i>=d.length){done(lk);return}const x=d[i];
+  tg.innerHTML=`<div class="deck"><div class="prog">${esc(who)} · ${i+1} / ${d.length}</div><div class="bar"><i style="width:${i/d.length*100}%"></i></div>
+  <article class="scard" id="sc"><span class="stamp yes">بشوفه</span><span class="stamp no">لا</span>
+  <div class="t-kind">${KIND[x.k]} · ${ORG[x.org]} · ${x.y} · ${len(x)}</div><div class="t-title">${x.t}</div><div class="t-orig">${x.o}</div>
+  <p class="t-why">${x.why}</p><div class="chips"><span class="chip ${FAM[x.f][1]}">${FAM[x.f][0]}</span>${[...x.md].map(m=>`<span class="chip">${MOODS[m]}</span>`).join("")}</div></article>
+  <div class="vote"><button class="btn no" id="bn">✕ لا</button><button class="btn yes" id="by">✓ بشوفه</button></div>
+  <p class="hint" style="text-align:center">اسحب البطاقة يمين أو يسار، أو استعمل الأزرار</p></div>`;
+  const c=$("#sc"),ys=c.querySelector(".yes"),ns=c.querySelector(".no");
+  const go=v=>{lk.push(v);c.style.transform=`translateX(${v?140:-140}%) rotate(${v?18:-18}deg)`;c.style.opacity=0;i++;setTimeout(draw,220)};
+  $("#by").onclick=()=>go(true);$("#bn").onclick=()=>go(false);
+  let sx=null,dx=0;
+  c.onpointerdown=e=>{sx=e.clientX;dx=0;c.classList.add("drag");c.setPointerCapture(e.pointerId)};
+  c.onpointermove=e=>{if(sx===null)return;dx=e.clientX-sx;c.style.transform=`translateX(${dx}px) rotate(${dx/18}deg)`;ys.style.opacity=Math.max(0,dx/100);ns.style.opacity=Math.max(0,-dx/100)};
+  c.onpointerup=c.onpointercancel=()=>{if(sx===null)return;sx=null;c.classList.remove("drag");if(Math.abs(dx)>90)go(dx>0);else{c.style.transform="";ys.style.opacity=ns.style.opacity=0}}};
+ draw()}
+function results(d,votes,names,bad){const n=votes.length;
+ const r=d.map((x,j)=>({x,c:votes.filter(v=>v[j]).length,who:names.filter((_,k)=>votes[k][j])})).sort((a,b)=>b.c-a.c);
+ const all=r.filter(o=>o.c===n),top=(all.length?all:r.filter(o=>o.c>0)).slice(0,5);
+ const head=all.length?`اتفقتم كلكم على ${all.length===1?"عمل واحد":all.length+" أعمال"} 🎉`:top.length?"ما في اتفاق كامل، هذا الأقرب لكم":"ولا عمل عجب الكل! جرّبوا مرة ثانية";
+ tg.innerHTML=`<div class="res-head"><h2>${head}</h2><div class="actions" style="margin:0">${all.length===1?"":'<button class="btn acc" id="pk1">⚖️ خلّي قرّرلي يحكم</button>'}<button class="btn ghost" id="again">جولة جديدة</button></div></div>
+ ${bad?`<p class="hint">تجاهلنا ${bad} كود ليس من هذه الغرفة.</p>`:""}
+ <div class="tickets">${top.map(o=>`<article class="ticket"><div class="t-main"><div class="t-kind">${KIND[o.x.k]} · ${ORG[o.x.org]} · ${o.x.y}</div><div class="t-title">${o.x.t}</div><div class="t-orig">${o.x.o}</div><p class="t-why">${o.x.why}</p><div class="chips">${o.c===n?'<span class="chip all">اتفق عليه الكل</span>':""}<span class="chip">${o.who.map(esc).join("، ")}</span><span class="chip">${len(o.x)}</span></div></div><div class="t-stub"><b>${o.c}/${n}</b><small>أصوات</small></div></article>`).join("")}</div><div id="spot2"></div>`;
+ $("#again").onclick=()=>setup();
+ const p=$("#pk1");if(p)p.onclick=()=>{const mx=r[0].c;let pool2,why;
+  if(all.length>1){pool2=all;why=`اتفقتم على ${all.length} أعمال، فسحبت قرعة بينها.`}
+  else if(mx>0){pool2=r.filter(o=>o.c===mx);why=(mx>n/2?`${mx} من ${n} اختاروه، والأغلبية تحكم`:`ما في أغلبية، فاخترت من الأعلى أصواتًا (${mx} من ${n})`)+(pool2.length>1?`، وبين المتعادلين عملت قرعة عادلة.`:".")}
+  else{pool2=r;why="ولا أحد عجبه شي! فالحكم صار عندي بالكامل."}
+  const w=pool2[Math.floor(Math.random()*pool2.length)];verdict($("#spot2"),w.x.t,why,p)}}
+function verdict(el,title,why,btn){const fast=matchMedia("(prefers-reduced-motion:reduce)").matches;btn.disabled=true;
+ el.innerHTML=`<div class="judge"><div class="gavel">⚖️</div><p class="hint" style="margin:0">المحكمة منعقدة…</p></div>`;
+ setTimeout(()=>{el.innerHTML=`<div class="judge on"><div class="gavel">⚖️</div><p class="j-lbl">حكم قرّرلي</p><p class="j-title">${esc(title)}</p><p class="j-why">${why}</p><p class="j-end">الحكم نهائي ولا يقبل الاستئناف 😄</p></div>`;btn.disabled=false;el.scrollIntoView({behavior:fast?"auto":"smooth",block:"center"})},fast?0:1400)}
+
+/* ===== أفلام تشبه ===== */
+const ALL=D.map(obj);
+$("#ltitles").innerHTML=ALL.map(x=>`<option value="${esc(x.t)}">${esc(x.o)}</option>`).join("");
+const QUICK=["Inception","Breaking Bad","Coco","Omar","Crash Landing on You","Death Note"];
+$("#lquick").innerHTML=QUICK.map(o=>{const x=ALL.find(y=>y.o===o);return `<button class="qk" data-q="${esc(x.t)}">${x.t}</button>`}).join(" · ");
+$("#lquick").onclick=e=>{const b=e.target.closest(".qk");if(b){$("#lq").value=b.dataset.q;like()}};
+const norm=s=>s.toLowerCase().replace(/[ً-ْـ]/g,"").replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/[^\p{L}\p{N}]+/gu," ").trim();
+function findT(q){const n=norm(q);if(!n)return null;return ALL.find(x=>norm(x.t)===n||norm(x.o)===n)||ALL.find(x=>norm(x.t).includes(n)||norm(x.o).includes(n))||ALL.find(x=>n.includes(norm(x.t)))}
+function simil(a,b){const sh=[...a.md].filter(m=>b.md.includes(m));let s=sh.length*4+(a.md[0]===b.md[0]?3:0)+(a.k===b.k?4:0)+(a.org===b.org?1.5:0)+(a.f===b.f?1:0)-Math.min(Math.abs(a.y-b.y),40)/20;return{s,sh}}
+function like(){const q=$("#lq").value.trim(),src=findT(q),out=$("#lout");
+ if(!q){out.innerHTML="";return}
+ if(!src){out.innerHTML=`<div class="empty">ما لقينا "${esc(q)}" في قائمتنا الحالية (60 عملًا). قريبًا تصير القائمة آلاف الأعمال. جرّب اسمًا من الاقتراحات.</div>`;return}
+ const r=ALL.filter(x=>x!==src).map(x=>({x,...simil(src,x)})).sort((a,b)=>b.s-a.s).slice(0,5);
+ out.innerHTML=`<div class="src"><span class="hint" style="margin:0">لأنك حبيت</span><b>${src.t}</b><span class="chip" style="color:var(--tink)">${KIND[src.k]} · ${ORG[src.org]}</span></div>
+ <div class="tickets">${r.map(o=>{const why=[o.sh.length?`نفس الأجواء: ${o.sh.map(m=>MOODS[m]).join("، ")}`:"",o.x.k===src.k&&o.x.org===src.org?`${KIND[o.x.k]} ${ORG[o.x.org]} مثله`:""].filter(Boolean);const fm=FAM[o.x.f];
+  return `<article class="ticket"><div class="t-main"><div class="t-kind">${KIND[o.x.k]} · ${ORG[o.x.org]} · ${o.x.y}</div><div class="t-title">${o.x.t}</div><div class="t-orig">${o.x.o}</div><p class="t-why">${o.x.why}</p><div class="chips">${why.map(w=>`<span class="chip all">${w}</span>`).join("")}<span class="chip ${fm[1]}">${fm[0]}</span><span class="chip">${len(o.x)}</span></div><button class="lk" data-like="${esc(o.x.o)}">أعمال تشبه هذا ←</button></div><div class="t-stub">${stub(o.x)}</div></article>`}).join("")}</div>`;
+ out.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"start"})}
+$("#lgo").onclick=like;$("#lq").addEventListener("keydown",e=>{if(e.key==="Enter")like()});
+document.addEventListener("click",e=>{const b=e.target.closest(".lk");if(!b)return;const x=ALL.find(y=>y.o===b.dataset.like);if(!x)return;$("#lq").value=x.t;
+ if(location.hash!=="#like")location.hash="like";else route();like()});
+/* ===== التنقل ===== */
+function route(){const hs=location.hash.slice(1);const rm=hs.match(/^room-(.+)$/);const v=rm||hs==="together"?"together":hs==="like"?"like":"pick";
+ document.querySelectorAll(".view").forEach(m=>m.hidden=m.id!=="v-"+v);
+ document.querySelectorAll("nav.tabs a").forEach(a=>{if(a.dataset.v===v)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
+ if(v==="together"){if(rm&&ROOM.test(rm[1]))roomJoin(rm[1]);else if(!tg.innerHTML)setup()}}
+addEventListener("hashchange",route);route();
+}
+</script>
+</body>
+</html>
