@@ -163,6 +163,8 @@ details.fg[open] summary{margin-bottom:6px}
 .vid{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000;margin-top:12px}.vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .modal{position:fixed;inset:0;background:rgba(10,0,4,.82);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
 .modal[hidden]{display:none}.modal .box2{width:min(900px,100%)}.modal .x{display:block;margin:0 0 8px auto}
+.mc{display:block;text-decoration:none}
+.pgrid .pc{position:relative}.pc .fb{position:absolute;top:6px;inset-inline-start:6px;font-size:11px;font-weight:700;background:#cdeccf;color:#14532d;border-radius:999px;padding:2px 8px}
 @media(max-width:600px){.ticket{grid-template-columns:minmax(0,1fr) 88px;
 -webkit-mask:radial-gradient(circle 10px at 88px 0,#0000 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 10px at 88px 100%,#0000 98%,#000) bottom/100% 51% no-repeat;
 mask:radial-gradient(circle 10px at 88px 0,#0000 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 10px at 88px 100%,#0000 98%,#000) bottom/100% 51% no-repeat}
@@ -587,7 +589,8 @@ function stub(x){return x.k==="m"?`<b>${x.n}</b><small>دقيقة</small>`:(x.n?
 function ticket(x,i){const fm=FAM[x.f];return `<article class="ticket" data-i="${i}"><div class="t-main"><div class="t-kind">${KIND[x.k]} · ${ORG[x.org]} · ${x.y}</div><div class="t-title">${x.t}</div><div class="t-orig">${x.o}</div><p class="t-why">${x.why}</p><div class="chips"><span class="chip ${fm[1]}">${fm[0]}</span>${[...x.md].map(m=>`<span class="chip">${MOODS[m]}</span>`).join("")}<span class="chip">${len(x)}</span></div>${extra(x)}${acts(x)}<button class="lk" data-like="${esc(x.o)}">أعمال تشبهه ←</button>${gdet(x)}</div><div class="t-stub">${pimg(x)}${stub(x)}</div></article>`}
 function next(){if(pool.length<3)build();shown=pool.splice(0,3);return shown}
 function render(note){const t=next();
- out.innerHTML=`<div class="res-head"><h2>تذاكرك الليلة</h2><div class="actions" style="margin:0"><button class="btn acc" id="pick">اختر لي واحدًا فقط</button><button class="btn ghost" id="more">اقتراحات أخرى</button></div></div>${note?`<p class="hint" style="margin:0 0 12px">${note}</p>`:""}<div class="tickets">${t.map(ticket).join("")}</div><div id="spot"></div>`;
+ out.innerHTML=`<div class="res-head"><h2>تذاكرك الليلة</h2><div class="actions" style="margin:0"><button class="btn acc" id="pick">اختر لي واحدًا فقط</button><button class="btn ghost" id="more">اقتراحات أخرى</button></div></div>${note?`<p class="hint" style="margin:0 0 12px">${note}</p>`:""}<div class="tickets">${t.map(ticket).join("")}</div><div id="spot"></div><section id="pmore" style="margin-top:34px"></section>`;
+ moreRecs();
  $("#more").onclick=()=>render("");$("#pick").onclick=pick;out.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"start"})}
 function pick(){const cards=[...document.querySelectorAll(".ticket")];if(!cards.length)return;
  const win=Math.floor(Math.random()*cards.length);let i=0,steps=8+win;const btn=$("#pick");btn.disabled=true;
@@ -735,7 +738,8 @@ $("#xt").onclick=e=>{const b=e.target.closest(".opt");if(!b)return;xtype=b.datas
 async function xsearch(){const q=$("#xq").value.trim();if(!q)return;const g=$("#xgrid");g.innerHTML='<p class="hint">جاري البحث…</p>';
  try{const r=await tm("/search/multi",{query:q});const l=r.results.filter(i=>i.media_type!=="person");$("#xh").textContent=l.length?`نتائج "${q}"`:`ما لقينا نتائج لـ "${q}"`;g.innerHTML=l.map(card).join("");$("#xh").scrollIntoView({block:"start"})}catch(e){g.innerHTML='<div class="empty">تعذّر البحث الآن.</div>'}}
 $("#xgo").onclick=xsearch;$("#xq").addEventListener("keydown",e=>{if(e.key==="Enter")xsearch()});
-$("#xgrid").onclick=async e=>{const b=e.target.closest(".pc");if(!b)return;const d=$("#xdet");d.innerHTML='<p class="hint">جاري التحميل…</p>';
+$("#xgrid").onclick=e=>{const b=e.target.closest(".pc");if(b)showDet(b,$("#xdet"))};
+async function showDet(b,d){d.innerHTML='<p class="hint">جاري التحميل…</p>';
  try{const t=b.dataset.t,id=b.dataset.id;const[it,pv,vd]=await Promise.all([tm(`/${t}/${id}`),tm(`/${t}/${id}/watch/providers`,{language:undefined}).catch(()=>({})),getVid(t,id).catch(()=>null)]);
   const rg=(pv.results||{})[REG]||{},flat=[...(rg.flatrate||[]),...(rg.free||[]),...(rg.ads||[])],rent=[...(rg.rent||[]),...(rg.buy||[])].filter((v,i,a)=>a.findIndex(z=>z.provider_id===v.provider_id)===i);
   const prov=l=>l.map(p=>`<span><img alt="" src="${IMG}w92${p.logo_path}">${esc(p.provider_name)}</span>`).join("");
@@ -744,7 +748,7 @@ $("#xgrid").onclick=async e=>{const b=e.target.closest(".pc");if(!b)return;const
   d.innerHTML=`<article class="det">${it.poster_path?`<img alt="" src="${IMG}w342${it.poster_path}">`:"<div></div>"}<div><div class="t-kind">${t==="movie"?"فيلم":"مسلسل"}${y?" · "+y:""}${len?" · "+len:""}${it.vote_average?" · ⭐ "+it.vote_average.toFixed(1):""}</div><h2>${esc(name)}</h2><div class="t-orig">${esc(it.original_title||it.original_name||"")}</div>
   <p class="t-why">${esc(it.overview||"لا يوجد وصف بالعربي لهذا العمل بعد.")}</p>${(it.genres||[]).length?`<div class="chips">${it.genres.map(g=>`<span class="chip">${esc(g.name)}</span>`).join("")}</div>`:""}
   ${vd?`<p style="font-weight:700;margin:14px 0 0">الإعلان الرسمي:</p>${vidFrame(vd.key)}`:""}<p style="font-weight:700;margin:14px 0 0">أين تشاهده (السعودية):</p>${flat.length?`<div class="prov">${prov(flat)}</div>`:'<p class="hint" style="margin:4px 0;color:#6b4a4f">غير متوفر باشتراك حاليًا.</p>'}${rent.length?`<p style="margin:10px 0 0;font-size:14px">للإيجار أو الشراء:</p><div class="prov">${prov(rent)}</div>`:""}
-  ${local?`${gdet(local,true)}${acts(local)}`:`<p class="hint" style="color:#6b4a4f;margin-top:12px">دليل العائلة لهذا العمل غير متوفر بعد.</p>`}</div></article>`;d.scrollIntoView({block:"start"})}catch(err){d.innerHTML='<div class="empty">تعذّر تحميل التفاصيل.</div>'}};
+  ${local?`${gdet(local,true)}${acts(local)}`:`<p class="hint" style="color:#6b4a4f;margin-top:12px">دليل العائلة لهذا العمل غير متوفر بعد.</p>`}</div></article>`;d.scrollIntoView({block:"start"})}catch(err){d.innerHTML='<div class="empty">تعذّر تحميل التفاصيل.</div>'}}
 
 /* ===== الإعلان الرسمي ===== */
 const pickVid=l=>{l=(l||[]).filter(v=>v.site==="YouTube"&&/Trailer|Teaser/.test(v.type)&&!/fan|concept|parody|reaction/i.test(v.name||""));const sc=v=>(v.official?10:0)+(v.type==="Trailer"?4:0)+(v.iso_639_1==="ar"?3:v.iso_639_1==="en"?1:0);return l.sort((a,b)=>sc(b)-sc(a))[0]};
@@ -756,6 +760,27 @@ async function openTrailer(o){const x=ALL.find(y=>y.o===o);const m=$("#vm"),b=$(
 const closeV=()=>{$("#vm").hidden=true;$("#vmb").innerHTML=""};
 $("#vmx").onclick=closeV;$("#vm").onclick=e=>{if(e.target.id==="vm")closeV()};addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#vm").hidden)closeV()});
 document.addEventListener("click",e=>{const b=e.target.closest("[data-tr]");if(b)openTrailer(b.dataset.tr)});
+
+/* ===== ترشيحات أكثر (قائمتنا + TMDB) ===== */
+const GEN={m:{c:"35",e:"18",a:"28|12",m:"9648|53",h:"27",i:"18",z:"10751|16|99"},s:{c:"35",e:"18",a:"10759",m:"9648",h:"9648|10765",i:"18",z:"10751|99"}};
+const LANG={ar:"ar",tr:"tr",kr:"ko",en:"en",an:"ja"};
+async function moreRecs(){const box=$("#pmore");if(!box)return;
+ const extra=pool.slice(0,9);
+ const local=extra.length?`<div class="res-head"><h2>من اختياراتنا أيضًا</h2></div><div class="pgrid">${extra.map(x=>{const p=TMI[x.o]&&TMI[x.o][2];return `<a class="pc mc" href="film/${SL[x.o]}.html"><img alt="" loading="lazy" ${p?`src="${IMG}w342/${p}"`:""}><span class="fb">${FAM[x.f][0]}</span><div><b>${x.t}</b><small>${KIND[x.k]} · ${x.y} · ${len(x)}</small></div></a>`}).join("")}</div>`:"";
+ box.innerHTML=local+`<div class="res-head" style="margin-top:26px"><h2>ترشيحات أكثر لنفس اختيارك</h2></div><p class="hint" style="margin:-6px 0 12px">أعمال إضافية من قاعدة بيانات TMDB حسب مزاجك ونوعك المفضل. اضغط على أي عمل لتشوف قصته وإعلانه وأين تشاهده.</p><div class="pgrid" id="tmg"><p class="hint">جاري التحميل…</p></div><div id="tmd"></div>`;
+ if(TMDB_KEY.length!==32){$("#tmg").innerHTML="";return}
+ const t=["mini","long"].includes(sel.time)?"tv":"movie",k=t==="movie"?"m":"s";
+ const q={sort_by:"vote_average.desc",include_adult:"false",page:String(1+Math.floor(Math.random()*3))};
+ let g=GEN[k][sel.mood]||"";const lang=sel.origin&&sel.origin!=="any"?LANG[sel.origin]:"";
+ if(lang)q.with_original_language=lang;if(sel.origin==="an")g="16"+(g?","+g.split("|")[0]:"");
+ if(sel.who==="fam"){if(t==="movie"){q.certification_country="US";q["certification.lte"]="PG"}else g=g?g+",10751":"10751";q.without_genres="27,80,10752"}
+ if(g)q.with_genres=g;q["vote_count.gte"]=lang&&lang!=="en"?"25":"300";
+ if(t==="movie"&&sel.time==="short")q["with_runtime.lte"]="99";if(t==="movie"&&sel.time==="film")q["with_runtime.gte"]="80";
+ if(sel.audio==="ar")q.with_original_language="ar";
+ try{const have=new Set(Object.values(TMI).map(v=>v[0]));const r=await tm(`/discover/${t}`,q);
+  const l=(r.results||[]).filter(i=>!have.has(i.id)&&i.poster_path).slice(0,12).map(i=>({...i,media_type:t}));
+  $("#tmg").innerHTML=l.length?l.map(card).join(""):'<p class="hint">ما لقينا أعمالًا إضافية بهذه الشروط، جرّب "ما بتفرق" في سؤال النوع.</p>'}catch(e){$("#tmg").innerHTML='<p class="hint">تعذّر تحميل ترشيحات إضافية الآن.</p>'}
+ $("#tmg").onclick=e=>{const b=e.target.closest(".pc");if(b){showDet(b,$("#tmd"))}}}
 /* ===== دليل العائلة ===== */
 const fr=[0,0,0,0,0];let fkind="a";const fwx=new Set();
 $("#fw").innerHTML=Object.entries(WL).filter(([k])=>k!=="sd2").map(([k,t])=>`<button class="opt" data-w="${k}" aria-pressed="false">${t}</button>`).join("");
