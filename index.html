@@ -143,6 +143,19 @@ details.fg[open] summary{margin-bottom:6px}
 .step small{color:var(--mute);display:block;direction:ltr;text-align:right}
 .stars{display:inline-flex;gap:2px}.stars button{font-size:22px;background:none;border:0;cursor:pointer;color:#d7b9b0;padding:2px;min-height:36px}.stars button.on{color:#e0a100}
 .ep{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:14px}.ep input{width:80px;min-height:38px;font:inherit;border-radius:10px;border:1.5px solid #d7b9b0;padding:4px 8px}
+
+.pimg{width:100%;max-width:92px;aspect-ratio:2/3;border-radius:8px;object-fit:cover;background:#ead4cb;margin-bottom:6px;display:block}
+.pimg:not([src]){display:none}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px}
+.pc{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;text-align:start;color:var(--ink);font:inherit;padding:0}
+.pc img{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;background:var(--bg2)}
+.pc div{padding:8px 10px;font-size:14px;line-height:1.4}.pc b{display:block;font-size:15px}.pc small{color:var(--mute)}
+.det{display:grid;grid-template-columns:minmax(0,160px) minmax(0,1fr);gap:18px;background:var(--ticket);color:var(--tink);border-radius:18px;padding:18px;margin-top:18px}
+.det img{width:100%;border-radius:12px}
+.det h2{font-family:Lalezar,serif;font-weight:400;font-size:32px;margin:0;line-height:1.15}
+.prov{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.prov span{display:inline-flex;align-items:center;gap:6px;background:#f3dfd6;border-radius:10px;padding:4px 10px 4px 4px;font-size:14px}.prov img{width:28px;height:28px;border-radius:7px}
+.tmdb{display:inline-flex;align-items:center;gap:8px;margin-top:6px}.tmdb b{background:linear-gradient(90deg,#90cea1,#01b4e4);color:#0d253f;padding:2px 10px;border-radius:6px;font-weight:800;letter-spacing:.5px}
+@media(max-width:600px){.det{grid-template-columns:1fr}.det img{max-width:180px}}
 @media(max-width:600px){.ticket{grid-template-columns:minmax(0,1fr) 88px;
 -webkit-mask:radial-gradient(circle 10px at 88px 0,#0000 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 10px at 88px 100%,#0000 98%,#000) bottom/100% 51% no-repeat;
 mask:radial-gradient(circle 10px at 88px 0,#0000 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 10px at 88px 100%,#0000 98%,#000) bottom/100% 51% no-repeat}
@@ -156,7 +169,7 @@ mask:radial-gradient(circle 10px at 88px 0,#0000 98%,#000) top/100% 51% no-repea
   <div class="logo"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8 14h24l-3 22H11z" fill="#fff6ee"/><path d="M8 14h24l-.6 4H8.6z" fill="#ff5d73"/><path d="M14 14l1.5 22M20 14v22M26 14l-1.5 22" stroke="#ff5d73" stroke-width="2.4"/><circle cx="13" cy="10" r="4" fill="#fff6ee"/><circle cx="20" cy="8" r="5" fill="#fff6ee"/><circle cx="27" cy="10" r="4" fill="#fff6ee"/></svg>قرّرلي</div>
   <div class="tag">نختار لك في 30 ثانية</div>
 </header>
-<nav class="tabs" aria-label="أقسام الموقع"><a href="#pick" data-v="pick">قرّرلي أنا</a><a href="#together" data-v="together">اختاروا معًا</a><a href="#like" data-v="like">أفلام تشبه…</a><a href="#family" data-v="family">دليل العائلة</a><a href="#guides" data-v="guides">ترتيب المشاهدة</a><a href="#mine" data-v="mine">قائمتي</a></nav>
+<nav class="tabs" aria-label="أقسام الموقع"><a href="#pick" data-v="pick">قرّرلي أنا</a><a href="#together" data-v="together">اختاروا معًا</a><a href="#like" data-v="like">أفلام تشبه…</a><a href="#family" data-v="family">دليل العائلة</a><a href="#explore" data-v="explore">رائج وبحث</a><a href="#guides" data-v="guides">ترتيب المشاهدة</a><a href="#mine" data-v="mine">قائمتي</a></nav>
 <main id="v-pick" class="view">
 
 <h1>محتار شو تشوف الليلة؟</h1>
@@ -213,6 +226,15 @@ mask:radial-gradient(circle 10px at 88px 0,#0000 98%,#000) top/100% 51% no-repea
 <section id="flist" aria-live="polite" style="margin-top:26px"></section>
 <p class="note">التقييمات تقديرية من فريق قرّرلي للنسخة الأصلية، وقد تختلف قليلًا من مشاهد لآخر. النسخ المدبلجة على القنوات العربية تُحذف منها بعض المشاهد غالبًا.</p>
 </main>
+<main id="v-explore" class="view" hidden>
+<h1>رائج وبحث</h1>
+<p class="lead">ابحث عن أي فيلم أو مسلسل في العالم، أو شوف شو الأكثر مشاهدة هذا الأسبوع، ووين تقدر تشوفه بشكل قانوني.</p>
+<section class="panel"><label for="xq" style="font-weight:700;display:block;margin-bottom:8px">ابحث عن أي عمل</label>
+<div class="row"><input id="xq" class="field" placeholder="اسم فيلم أو مسلسل بالعربي أو الإنجليزي" autocomplete="off" style="flex:1 1 240px"><button class="btn acc" id="xgo">ابحث</button></div></section>
+<section id="xdet" aria-live="polite"></section>
+<div class="res-head" style="margin-top:26px"><h2 id="xh">الأكثر رواجًا هذا الأسبوع</h2><div class="opts" id="xt"><button class="opt" data-v="all" aria-pressed="true">الكل</button><button class="opt" data-v="movie">أفلام</button><button class="opt" data-v="tv">مسلسلات</button></div></div>
+<div id="xgrid" class="pgrid"></div>
+</main>
 <main id="v-guides" class="view" hidden>
 <h1>ترتيب المشاهدة</h1>
 <p class="lead">سلاسل طويلة ومحتار من وين تبدأ؟ اختر الترتيب، وعلّم على كل جزء تخلّصه، والموقع يتذكر وين وصلت.</p>
@@ -232,7 +254,7 @@ mask:radial-gradient(circle 10px at 88px 0,#0000 98%,#000) top/100% 51% no-repea
 <p class="note">نسخة تجريبية: القائمة الحالية فيها 74 عملًا مختارًا يدويًا، وتصنيف "مناسب للعائلة" مبدئي وسيُفصَّل لاحقًا (عنف، ألفاظ، مشاهد).</p>
 </div>
 
-<footer class="foot"><nav aria-label="روابط الموقع"><a href="./">الرئيسية</a><a href="about.html">من نحن</a><a href="contact.html">اتصل بنا</a><a href="privacy.html">سياسة الخصوصية</a><a href="terms.html">شروط الاستخدام</a></nav><p>© 2026 قرّرلي · qarrirli.com — لا نعرض أفلامًا ولا روابط تحميل، فقط نساعدك تختار.</p></footer>
+<footer class="foot"><nav aria-label="روابط الموقع"><a href="./">الرئيسية</a><a href="about.html">من نحن</a><a href="contact.html">اتصل بنا</a><a href="privacy.html">سياسة الخصوصية</a><a href="terms.html">شروط الاستخدام</a></nav><p>© 2026 قرّرلي · qarrirli.com — لا نعرض أفلامًا ولا روابط تحميل، فقط نساعدك تختار.</p><p class="tmdb"><b>TMDB</b><span dir="ltr">This product uses the TMDB API but is not endorsed or certified by TMDB.</span></p><p>بيانات أماكن المشاهدة مقدّمة من JustWatch عبر TMDB.</p></footer>
 <script>
 {
 // [عنوان عربي, الاسم الأصلي, السنة, نوع m/s, مدة بالدقائق أو عدد حلقات, مواسم, الأصل, أمزجة, العائلة 2/1/0, لماذا نرشحه]
@@ -353,7 +375,7 @@ function build(){const all=D.map(obj);
 function len(x){if(x.k==="m"){const h=Math.floor(x.n/60),m=x.n%60;return [h?h+" س":"",m?m+" د":""].filter(Boolean).join(" ")}
  return x.n?x.n+" حلقة":x.s+" مواسم"}
 function stub(x){return x.k==="m"?`<b>${x.n}</b><small>دقيقة</small>`:(x.n?`<b>${x.n}</b><small>حلقة</small>`:`<b>${x.s}</b><small>مواسم</small>`)}
-function ticket(x,i){const fm=FAM[x.f];return `<article class="ticket" data-i="${i}"><div class="t-main"><div class="t-kind">${KIND[x.k]} · ${ORG[x.org]} · ${x.y}</div><div class="t-title">${x.t}</div><div class="t-orig">${x.o}</div><p class="t-why">${x.why}</p><div class="chips"><span class="chip ${fm[1]}">${fm[0]}</span>${[...x.md].map(m=>`<span class="chip">${MOODS[m]}</span>`).join("")}<span class="chip">${len(x)}</span></div>${extra(x)}${acts(x)}<button class="lk" data-like="${esc(x.o)}">أعمال تشبهه ←</button>${gdet(x)}</div><div class="t-stub">${stub(x)}</div></article>`}
+function ticket(x,i){const fm=FAM[x.f];return `<article class="ticket" data-i="${i}"><div class="t-main"><div class="t-kind">${KIND[x.k]} · ${ORG[x.org]} · ${x.y}</div><div class="t-title">${x.t}</div><div class="t-orig">${x.o}</div><p class="t-why">${x.why}</p><div class="chips"><span class="chip ${fm[1]}">${fm[0]}</span>${[...x.md].map(m=>`<span class="chip">${MOODS[m]}</span>`).join("")}<span class="chip">${len(x)}</span></div>${extra(x)}${acts(x)}<button class="lk" data-like="${esc(x.o)}">أعمال تشبهه ←</button>${gdet(x)}</div><div class="t-stub">${pimg(x)}${stub(x)}</div></article>`}
 function next(){if(pool.length<3)build();shown=pool.splice(0,3);return shown}
 function render(note){const t=next();
  out.innerHTML=`<div class="res-head"><h2>تذاكرك الليلة</h2><div class="actions" style="margin:0"><button class="btn acc" id="pick">اختر لي واحدًا فقط</button><button class="btn ghost" id="more">اقتراحات أخرى</button></div></div>${note?`<p class="hint" style="margin:0 0 12px">${note}</p>`:""}<div class="tickets">${t.map(ticket).join("")}</div><div id="spot"></div>`;
@@ -476,12 +498,43 @@ function like(){const q=$("#lq").value.trim(),src=findT(q),out=$("#lout");
  const r=ALL.filter(x=>x!==src).map(x=>({x,...simil(src,x)})).sort((a,b)=>b.s-a.s).slice(0,5);
  out.innerHTML=`<div class="src"><span class="hint" style="margin:0">لأنك حبيت</span><b>${src.t}</b><span class="chip" style="color:var(--tink)">${KIND[src.k]} · ${ORG[src.org]}</span></div>
  <div class="tickets">${r.map(o=>{const why=[o.sh.length?`نفس الأجواء: ${o.sh.map(m=>MOODS[m]).join("، ")}`:"",o.x.k===src.k&&o.x.org===src.org?`${KIND[o.x.k]} ${ORG[o.x.org]} مثله`:""].filter(Boolean);const fm=FAM[o.x.f];
-  return `<article class="ticket"><div class="t-main"><div class="t-kind">${KIND[o.x.k]} · ${ORG[o.x.org]} · ${o.x.y}</div><div class="t-title">${o.x.t}</div><div class="t-orig">${o.x.o}</div><p class="t-why">${o.x.why}</p><div class="chips">${why.map(w=>`<span class="chip all">${w}</span>`).join("")}<span class="chip ${fm[1]}">${fm[0]}</span><span class="chip">${len(o.x)}</span></div>${extra(o.x)}${acts(o.x)}<button class="lk" data-like="${esc(o.x.o)}">أعمال تشبه هذا ←</button>${gdet(o.x)}</div><div class="t-stub">${stub(o.x)}</div></article>`}).join("")}</div>`;
+  return `<article class="ticket"><div class="t-main"><div class="t-kind">${KIND[o.x.k]} · ${ORG[o.x.org]} · ${o.x.y}</div><div class="t-title">${o.x.t}</div><div class="t-orig">${o.x.o}</div><p class="t-why">${o.x.why}</p><div class="chips">${why.map(w=>`<span class="chip all">${w}</span>`).join("")}<span class="chip ${fm[1]}">${fm[0]}</span><span class="chip">${len(o.x)}</span></div>${extra(o.x)}${acts(o.x)}<button class="lk" data-like="${esc(o.x.o)}">أعمال تشبه هذا ←</button>${gdet(o.x)}</div><div class="t-stub">${pimg(o.x)}${stub(o.x)}</div></article>`}).join("")}</div>`;
  out.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"start"})}
 $("#lgo").onclick=like;$("#lq").addEventListener("keydown",e=>{if(e.key==="Enter")like()});
 document.addEventListener("click",e=>{const b=e.target.closest(".lk");if(!b)return;const x=ALL.find(y=>y.o===b.dataset.like);if(!x)return;$("#lq").value=x.t;
  if(location.hash!=="#like")location.hash="like";else route();like()});
 
+/* ===== TMDB ===== */
+const TMDB_KEY="dbd2ea9af0050bc7ee95fea8d36476d5",IMG="https://image.tmdb.org/t/p/",REG="SA";
+const tm=(path,q={})=>fetch(`https://api.themoviedb.org/3${path}?`+new URLSearchParams(Object.entries({api_key:TMDB_KEY,language:"ar",...q}).filter(([,v])=>v!==undefined))).then(r=>{if(!r.ok)throw r.status;return r.json()});
+LS.tm=LS.tm||{};
+const pimg=x=>{const c=LS.tm[x.o];return `<img class="pimg" alt="" loading="lazy" data-po="${esc(x.o)}"${c&&c.p?` src="${IMG}w185${c.p}"`:""}>`};
+const pending=new Set();
+async function look(o){if(pending.has(o)||LS.tm[o])return;const x=ALL.find(y=>y.o===o);if(!x)return;pending.add(o);
+ try{const t=x.k==="m"?"movie":"tv";const r=await tm(`/search/${t}`,{query:x.o,[t==="movie"?"year":"first_air_date_year"]:x.y,language:"en-US"});let it=r.results&&r.results[0];
+  if(!it){const r2=await tm(`/search/${t}`,{query:x.o,language:"en-US"});it=r2.results&&r2.results[0]}
+  LS.tm[o]=it?{id:it.id,t,p:it.poster_path}:{none:1};saveLS();
+  if(it&&it.poster_path)document.querySelectorAll(`img[data-po="${CSS.escape(o)}"]`).forEach(i=>i.src=IMG+"w185"+it.poster_path)}catch(e){}finally{pending.delete(o)}}
+if(TMDB_KEY.length===32){new MutationObserver(()=>document.querySelectorAll("img.pimg:not([src])").forEach(i=>look(i.dataset.po))).observe(document.body,{childList:true,subtree:true})}
+const card=it=>{const t=it.media_type||(it.title?"movie":"tv"),name=it.title||it.name,y=(it.release_date||it.first_air_date||"").slice(0,4);
+ return `<button class="pc" data-id="${it.id}" data-t="${t}"><img alt="" loading="lazy" ${it.poster_path?`src="${IMG}w342${it.poster_path}"`:""}><div><b>${esc(name||"")}</b><small>${t==="movie"?"فيلم":"مسلسل"}${y?" · "+y:""}${it.vote_average?" · ⭐ "+it.vote_average.toFixed(1):""}</small></div></button>`};
+let xtype="all";
+async function trending(){const g=$("#xgrid");if(TMDB_KEY.length!==32){g.innerHTML='<div class="empty">قريبًا.</div>';return}
+ g.innerHTML='<p class="hint">جاري التحميل…</p>';try{const r=await tm(`/trending/${xtype}/week`);g.innerHTML=r.results.filter(i=>i.media_type!=="person").map(card).join("");$("#xh").textContent="الأكثر رواجًا هذا الأسبوع"}catch(e){g.innerHTML='<div class="empty">تعذّر التحميل الآن، جرّب بعد قليل.</div>'}}
+$("#xt").onclick=e=>{const b=e.target.closest(".opt");if(!b)return;xtype=b.dataset.v;$("#xt").querySelectorAll(".opt").forEach(x=>x.setAttribute("aria-pressed",x===b));trending()};
+async function xsearch(){const q=$("#xq").value.trim();if(!q)return;const g=$("#xgrid");g.innerHTML='<p class="hint">جاري البحث…</p>';
+ try{const r=await tm("/search/multi",{query:q});const l=r.results.filter(i=>i.media_type!=="person");$("#xh").textContent=l.length?`نتائج "${q}"`:`ما لقينا نتائج لـ "${q}"`;g.innerHTML=l.map(card).join("");$("#xh").scrollIntoView({block:"start"})}catch(e){g.innerHTML='<div class="empty">تعذّر البحث الآن.</div>'}}
+$("#xgo").onclick=xsearch;$("#xq").addEventListener("keydown",e=>{if(e.key==="Enter")xsearch()});
+$("#xgrid").onclick=async e=>{const b=e.target.closest(".pc");if(!b)return;const d=$("#xdet");d.innerHTML='<p class="hint">جاري التحميل…</p>';
+ try{const t=b.dataset.t,id=b.dataset.id;const[it,pv]=await Promise.all([tm(`/${t}/${id}`),tm(`/${t}/${id}/watch/providers`,{language:undefined}).catch(()=>({}))]);
+  const rg=(pv.results||{})[REG]||{},flat=[...(rg.flatrate||[]),...(rg.free||[]),...(rg.ads||[])],rent=[...(rg.rent||[]),...(rg.buy||[])].filter((v,i,a)=>a.findIndex(z=>z.provider_id===v.provider_id)===i);
+  const prov=l=>l.map(p=>`<span><img alt="" src="${IMG}w92${p.logo_path}">${esc(p.provider_name)}</span>`).join("");
+  const name=it.title||it.name,y=(it.release_date||it.first_air_date||"").slice(0,4),len=it.runtime?it.runtime+" دقيقة":it.number_of_episodes?it.number_of_episodes+" حلقة":"";
+  const local=ALL.find(x=>x.o.toLowerCase()===(it.original_title||it.original_name||"").toLowerCase()||x.o.toLowerCase()===(name||"").toLowerCase());
+  d.innerHTML=`<article class="det">${it.poster_path?`<img alt="" src="${IMG}w342${it.poster_path}">`:"<div></div>"}<div><div class="t-kind">${t==="movie"?"فيلم":"مسلسل"}${y?" · "+y:""}${len?" · "+len:""}${it.vote_average?" · ⭐ "+it.vote_average.toFixed(1):""}</div><h2>${esc(name)}</h2><div class="t-orig">${esc(it.original_title||it.original_name||"")}</div>
+  <p class="t-why">${esc(it.overview||"لا يوجد وصف بالعربي لهذا العمل بعد.")}</p>${(it.genres||[]).length?`<div class="chips">${it.genres.map(g=>`<span class="chip">${esc(g.name)}</span>`).join("")}</div>`:""}
+  <p style="font-weight:700;margin:14px 0 0">أين تشاهده (السعودية):</p>${flat.length?`<div class="prov">${prov(flat)}</div>`:'<p class="hint" style="margin:4px 0;color:#6b4a4f">غير متوفر باشتراك حاليًا.</p>'}${rent.length?`<p style="margin:10px 0 0;font-size:14px">للإيجار أو الشراء:</p><div class="prov">${prov(rent)}</div>`:""}
+  ${local?`${gdet(local,true)}${acts(local)}`:`<p class="hint" style="color:#6b4a4f;margin-top:12px">دليل العائلة لهذا العمل غير متوفر بعد.</p>`}</div></article>`;d.scrollIntoView({block:"start"})}catch(err){d.innerHTML='<div class="empty">تعذّر تحميل التفاصيل.</div>'}};
 /* ===== دليل العائلة ===== */
 const fr=[0,0,0,0,0];let fkind="a";const fwx=new Set();
 $("#fw").innerHTML=Object.entries(WL).filter(([k])=>k!=="sd2").map(([k,t])=>`<button class="opt" data-w="${k}" aria-pressed="false">${t}</button>`).join("");
@@ -489,7 +542,7 @@ $("#fw").onclick=e=>{const b=e.target.closest(".opt");if(!b)return;const k=b.dat
 $("#frules").innerHTML=GC.map((c,i)=>`<div class="rule"><b>${c}</b><div class="opts" data-fr="${i}"><button class="opt" data-v="0" aria-pressed="true">ما بتفرق</button><button class="opt" data-v="1">خفيف مقبول</button><button class="opt" data-v="2">بدون أبدًا</button></div></div>`).join("");
 document.querySelectorAll("[data-fr]").forEach(o=>o.onclick=e=>{const b=e.target.closest(".opt");if(!b)return;fr[+o.dataset.fr]=+b.dataset.v;o.querySelectorAll(".opt").forEach(x=>x.setAttribute("aria-pressed",x===b));flist()});
 document.querySelector("[data-fk]").onclick=e=>{const b=e.target.closest(".opt");if(!b)return;fkind=b.dataset.v;e.currentTarget.querySelectorAll(".opt").forEach(x=>x.setAttribute("aria-pressed",x===b));flist()};
-function fcard(x,open){const fm=FAM[x.f];return `<article class="ticket"><div class="t-main"><div class="t-kind">${KIND[x.k]} · ${ORG[x.org]} · ${x.y}</div><div class="t-title">${x.t}</div><div class="t-orig">${x.o}</div><p class="t-why">${x.why}</p><div class="chips"><span class="chip ${fm[1]}">${fm[0]}</span><span class="chip">${len(x)}</span></div>${extra(x)}${acts(x)}${gdet(x,open)}<button class="lk" data-like="${esc(x.o)}">أعمال تشبهه ←</button></div><div class="t-stub">${stub(x)}</div></article>`}
+function fcard(x,open){const fm=FAM[x.f];return `<article class="ticket"><div class="t-main"><div class="t-kind">${KIND[x.k]} · ${ORG[x.org]} · ${x.y}</div><div class="t-title">${x.t}</div><div class="t-orig">${x.o}</div><p class="t-why">${x.why}</p><div class="chips"><span class="chip ${fm[1]}">${fm[0]}</span><span class="chip">${len(x)}</span></div>${extra(x)}${acts(x)}${gdet(x,open)}<button class="lk" data-like="${esc(x.o)}">أعمال تشبهه ←</button></div><div class="t-stub">${pimg(x)}${stub(x)}</div></article>`}
 function flist(){const l=ALL.filter(x=>(fkind==="a"||x.k===fkind)&&gv(x).every((v,i)=>fr[i]===0||(fr[i]===1?v<=1:v===0))&&!(W[x.o]||[]).some(k=>fwx.has(k)||(k==="sd2"&&fwx.has("sd"))))
  .sort((a,b)=>gv(a).reduce((s,v)=>s+v,0)-gv(b).reduce((s,v)=>s+v,0));
  $("#flist").innerHTML=`<div class="res-head"><h2>${l.length?l.length+" عمل يناسب بيتك":"ما في أعمال بهذه الشروط"}</h2></div>${l.length?`<div class="tickets">${l.map(x=>fcard(x,false)).join("")}</div>`:'<div class="empty">خفّف شرطًا واحدًا وجرّب مرة ثانية.</div>'}`}
@@ -509,7 +562,7 @@ function mine(){const byO=o=>ALL.find(x=>x.o===o);const lat=Object.keys(LS.later
  const row=(x,seen)=>`<article class="ticket"><div class="t-main"><div class="t-kind">${KIND[x.k]} · ${ORG[x.org]} · ${x.y}</div><div class="t-title">${x.t}</div><div class="t-orig">${x.o}</div>
  ${seen?`<div class="stars" data-o="${esc(x.o)}" aria-label="تقييمك">${[1,2,3,4,5].map(s=>`<button data-s="${s}" class="${(LS.rate[x.o]||0)>=s?"on":""}" aria-label="${s} من 5">★</button>`).join("")}</div>`:""}
  ${x.k==="s"&&!seen?`<label class="ep">وصلت للحلقة <input type="number" min="0" inputmode="numeric" data-ep="${esc(x.o)}" value="${LS.ep[x.o]||""}">${x.n?` من ${x.n}`:""}</label>`:""}
- ${acts(x)}</div><div class="t-stub">${stub(x)}</div></article>`;
+ ${acts(x)}</div><div class="t-stub">${pimg(x)}${stub(x)}</div></article>`;
  $("#ml").innerHTML=`<div class="res-head"><h2>سأشاهده لاحقًا (${lat.length})</h2></div>${lat.length?`<div class="tickets">${lat.map(x=>row(x,0)).join("")}</div>`:'<div class="empty">فاضية. اضغط "＋ سأشاهده لاحقًا" على أي تذكرة.</div>'}
  <div class="res-head" style="margin-top:30px"><h2>شاهدته (${sn.length})</h2></div>${sn.length?`<div class="tickets">${sn.map(x=>row(x,1)).join("")}</div>`:'<div class="empty">ما علّمت على أي عمل بعد.</div>'}`;
  $("#ml").querySelectorAll(".stars").forEach(s=>s.onclick=e=>{const b=e.target.closest("button");if(!b)return;LS.rate[s.dataset.o]=+b.dataset.s;saveLS();s.querySelectorAll("button").forEach(x=>x.classList.toggle("on",+x.dataset.s<=+b.dataset.s))});
@@ -527,8 +580,10 @@ function guides(){$("#gl").innerHTML=GUIDES.map((g,gi)=>{const keys=Object.keys(
 {const d=new Date(),k=d.getFullYear()*1000+Math.floor((d-new Date(d.getFullYear(),0,0))/864e5),DP=ALL.filter(y=>y.f>=1),x=DP[(k*7919)%DP.length];
  $("#daily").innerHTML=`<div class="dl"><div><small>🎬 ترشيح اليوم (${d.toLocaleDateString("ar",{day:"numeric",month:"long"})})</small><b>${x.t}</b><small>${KIND[x.k]} · ${ORG[x.org]} · ${len(x)}</small></div><button class="btn ghost" data-like="${esc(x.o)}" id="dlk">اعرض التذكرة</button></div>`;
  $("#dlk").onclick=()=>{sel.mood=x.md[0];paint();$("#out").innerHTML=`<div class="res-head"><h2>ترشيح اليوم</h2></div><div class="tickets">${ticket(x,0)}</div>`;shown=[x];$("#out").scrollIntoView({block:"start"})}}
+
 /* ===== التنقل ===== */
-function route(){const hs=location.hash.slice(1);const rm=hs.match(/^room-(.+)$/);const v=rm||hs==="together"?"together":["like","family","guides","mine"].includes(hs)?hs:"pick";
+function route(){const hs=location.hash.slice(1);const rm=hs.match(/^room-(.+)$/);const v=rm||hs==="together"?"together":["like","family","guides","mine","explore"].includes(hs)?hs:"pick";
+ if(v==="explore"&&!$("#xgrid").innerHTML)trending();
  if(v==="mine")mine();if(v==="guides")guides();
  document.querySelectorAll(".view").forEach(m=>m.hidden=m.id!=="v-"+v);
  document.querySelectorAll("nav.tabs a").forEach(a=>{if(a.dataset.v===v)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
