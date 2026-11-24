@@ -8,7 +8,7 @@ const ls = { get: k => { try { return localStorage.getItem(k); } catch { return 
 const MAILS = ["gmail.com","googlemail.com","outlook.com","hotmail.com","live.com","msn.com","yahoo.com","ymail.com","rocketmail.com","icloud.com","me.com","mac.com","aol.com","proton.me","protonmail.com","pm.me","yandex.com","yandex.ru","mail.ru","gmx.com","gmx.net","gmx.de","web.de","zoho.com","zohomail.com","mail.com","tutanota.com","tuta.io","orange.fr","free.fr","laposte.net","sfr.fr","libero.it","t-online.de","qq.com","163.com","naver.com","daum.net","seznam.cz","wp.pl","o2.pl","rediffmail.com","bk.ru","inbox.ru","list.ru","fastmail.com"];
 const mailOk = m => { const d = String(m || "").toLowerCase().split("@")[1] || ""; return MAILS.includes(d) || /^(hotmail|outlook|live|yahoo|windowslive)\.[a-z.]{2,6}$/.test(d); };
 // كابتشا Cloudflare Turnstile
-const TS_KEY = "__TS_KEY__";
+const TS_KEY = "0x4AAAAAAGRDcVX4NuTYOznl";
 let tsToken = "", tsId = null, tsLoad = null;
 function captcha() {
   const box = $("#lcap"); if (!box || !TS_KEY || TS_KEY.startsWith("__")) { tsToken = "skip"; return; }
