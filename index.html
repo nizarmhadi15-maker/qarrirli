@@ -165,6 +165,7 @@ details.fg[open] summary{margin-bottom:6px}
 .modal[hidden]{display:none}.modal .box2{width:min(900px,100%)}.modal .x{display:block;margin:0 0 8px auto}
 .mc{display:block;text-decoration:none}
 .pgrid .pc{position:relative}.pc .fb{position:absolute;top:6px;inset-inline-start:6px;font-size:11px;font-weight:700;background:#cdeccf;color:#14532d;border-radius:999px;padding:2px 8px}
+.pc .pvs{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;min-height:22px}.pc .pvs img{width:22px;height:22px;border-radius:5px}.pc .pvs em{font-style:normal;font-size:12px;color:var(--mute)}
 @media(max-width:600px){.ticket{grid-template-columns:minmax(0,1fr) 88px;
 -webkit-mask:radial-gradient(circle 10px at 88px 0,#0000 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 10px at 88px 100%,#0000 98%,#000) bottom/100% 51% no-repeat;
 mask:radial-gradient(circle 10px at 88px 0,#0000 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 10px at 88px 100%,#0000 98%,#000) bottom/100% 51% no-repeat}
@@ -730,13 +731,18 @@ async function look(o){if(pending.has(o)||LS.tm[o]||TMI[o])return;const x=ALL.fi
   if(it&&it.poster_path)document.querySelectorAll(`img[data-po="${CSS.escape(o)}"]`).forEach(i=>i.src=IMG+"w185"+it.poster_path)}catch(e){}finally{pending.delete(o)}}
 if(TMDB_KEY.length===32){new MutationObserver(()=>document.querySelectorAll("img.pimg:not([src])").forEach(i=>look(i.dataset.po))).observe(document.body,{childList:true,subtree:true})}
 const card=it=>{const t=it.media_type||(it.title?"movie":"tv"),name=it.title||it.name,y=(it.release_date||it.first_air_date||"").slice(0,4);
- return `<button class="pc" data-id="${it.id}" data-t="${t}"><img alt="" loading="lazy" ${it.poster_path?`src="${IMG}w342${it.poster_path}"`:""}><div><b>${esc(name||"")}</b><small>${t==="movie"?"فيلم":"مسلسل"}${y?" · "+y:""}${it.vote_average?" · ⭐ "+it.vote_average.toFixed(1):""}</small></div></button>`};
+ return `<button class="pc" data-id="${it.id}" data-t="${t}"><img alt="" loading="lazy" ${it.poster_path?`src="${IMG}w342${it.poster_path}"`:""}><div><b>${esc(name||"")}</b><small>${t==="movie"?"فيلم":"مسلسل"}${y?" · "+y:""}${it.vote_average?" · ⭐ "+it.vote_average.toFixed(1):""}</small><span class="pvs" data-pv="${t}/${it.id}"><em>…</em></span></div></button>`};
+const PVC={};
+async function fillProv(root){const els=[...root.querySelectorAll(".pvs[data-pv]")];
+ await Promise.all(els.map(async el=>{const k=el.dataset.pv;try{if(!PVC[k]){const r=await tm(`/${k}/watch/providers`,{language:undefined});const g=(r.results||{})[REG]||{};
+   const l=[...(g.flatrate||[]),...(g.free||[]),...(g.ads||[])];const b=[...(g.rent||[]),...(g.buy||[])];PVC[k]={l:l.filter((v,i,a)=>a.findIndex(z=>z.provider_id===v.provider_id)===i).slice(0,4),b:b.length}}
+  const c=PVC[k];el.innerHTML=c.l.length?c.l.map(p=>`<img alt="${esc(p.provider_name)}" title="${esc(p.provider_name)}" src="${IMG}w92${p.logo_path}">`).join(""):`<em>${c.b?"للإيجار أو الشراء":"غير متوفر في السعودية"}</em>`}catch(e){el.innerHTML=""}}))}
 let xtype="all";
 async function trending(){const g=$("#xgrid");if(TMDB_KEY.length!==32){g.innerHTML='<div class="empty">قريبًا.</div>';return}
- g.innerHTML='<p class="hint">جاري التحميل…</p>';try{const r=await tm(`/trending/${xtype}/week`);g.innerHTML=r.results.filter(i=>i.media_type!=="person").map(card).join("");$("#xh").textContent="الأكثر رواجًا هذا الأسبوع"}catch(e){g.innerHTML='<div class="empty">تعذّر التحميل الآن، جرّب بعد قليل.</div>'}}
+ g.innerHTML='<p class="hint">جاري التحميل…</p>';try{const r=await tm(`/trending/${xtype}/week`);g.innerHTML=r.results.filter(i=>i.media_type!=="person").map(card).join("");fillProv(g);$("#xh").textContent="الأكثر رواجًا هذا الأسبوع"}catch(e){g.innerHTML='<div class="empty">تعذّر التحميل الآن، جرّب بعد قليل.</div>'}}
 $("#xt").onclick=e=>{const b=e.target.closest(".opt");if(!b)return;xtype=b.dataset.v;$("#xt").querySelectorAll(".opt").forEach(x=>x.setAttribute("aria-pressed",x===b));trending()};
 async function xsearch(){const q=$("#xq").value.trim();if(!q)return;const g=$("#xgrid");g.innerHTML='<p class="hint">جاري البحث…</p>';
- try{const r=await tm("/search/multi",{query:q});const l=r.results.filter(i=>i.media_type!=="person");$("#xh").textContent=l.length?`نتائج "${q}"`:`ما لقينا نتائج لـ "${q}"`;g.innerHTML=l.map(card).join("");$("#xh").scrollIntoView({block:"start"})}catch(e){g.innerHTML='<div class="empty">تعذّر البحث الآن.</div>'}}
+ try{const r=await tm("/search/multi",{query:q});const l=r.results.filter(i=>i.media_type!=="person");$("#xh").textContent=l.length?`نتائج "${q}"`:`ما لقينا نتائج لـ "${q}"`;g.innerHTML=l.map(card).join("");fillProv(g);$("#xh").scrollIntoView({block:"start"})}catch(e){g.innerHTML='<div class="empty">تعذّر البحث الآن.</div>'}}
 $("#xgo").onclick=xsearch;$("#xq").addEventListener("keydown",e=>{if(e.key==="Enter")xsearch()});
 $("#xgrid").onclick=e=>{const b=e.target.closest(".pc");if(b)showDet(b,$("#xdet"))};
 async function showDet(b,d){d.innerHTML='<p class="hint">جاري التحميل…</p>';
@@ -780,7 +786,7 @@ async function moreRecs(){const box=$("#pmore");if(!box)return;
  try{const have=new Set(Object.values(TMI).map(v=>v[0]));const r=await tm(`/discover/${t}`,q);
   const l=(r.results||[]).filter(i=>!have.has(i.id)&&i.poster_path).slice(0,12).map(i=>({...i,media_type:t}));
   $("#tmg").innerHTML=l.length?l.map(card).join(""):'<p class="hint">ما لقينا أعمالًا إضافية بهذه الشروط، جرّب "ما بتفرق" في سؤال النوع.</p>'}catch(e){$("#tmg").innerHTML='<p class="hint">تعذّر تحميل ترشيحات إضافية الآن.</p>'}
- $("#tmg").onclick=e=>{const b=e.target.closest(".pc");if(b){showDet(b,$("#tmd"))}}}
+ fillProv($("#tmg"));$("#tmg").onclick=e=>{const b=e.target.closest(".pc");if(b){showDet(b,$("#tmd"))}}}
 /* ===== دليل العائلة ===== */
 const fr=[0,0,0,0,0];let fkind="a";const fwx=new Set();
 $("#fw").innerHTML=Object.entries(WL).filter(([k])=>k!=="sd2").map(([k,t])=>`<button class="opt" data-w="${k}" aria-pressed="false">${t}</button>`).join("");
@@ -828,7 +834,10 @@ function guides(){$("#gl").innerHTML=GUIDES.map((g,gi)=>{const keys=Object.keys(
  $("#dlk").onclick=()=>{sel.mood=x.md[0];paint();$("#out").innerHTML=`<div class="res-head"><h2>ترشيح اليوم</h2></div><div class="tickets">${ticket(x,0)}</div>`;shown=[x];$("#out").scrollIntoView({block:"start"})}}
 
 /* ===== التنقل ===== */
-$(".logo").addEventListener("click",e=>{e.preventDefault();if(location.hash&&location.hash!=="#pick")location.hash="pick";else route();scrollTo({top:0,behavior:"smooth"})});
+function resetPick(){for(const k in sel)sel[k]=null;paint();save();out.innerHTML="";pool=[];shown=[];const hn=$("#hint");hn.textContent="اختر المزاج على الأقل، والباقي إذا حبيت.";hn.style.color=""}
+function goHome(e){e.preventDefault();resetPick();if(location.hash&&location.hash!=="#pick")location.hash="pick";else route();scrollTo({top:0,behavior:"smooth"})}
+$(".logo").addEventListener("click",goHome);
+document.querySelector('nav.tabs a[data-v="pick"]').addEventListener("click",goHome);
 
 function route(){const hs=location.hash.slice(1);const rm=hs.match(/^room-(.+)$/);const v=rm||hs==="together"?"together":["like","family","guides","mine","explore"].includes(hs)?hs:"pick";
  if(v==="explore"&&!$("#xgrid").innerHTML)trending();
