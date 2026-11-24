@@ -90,6 +90,7 @@ onAuthStateChanged(auth, async u => {
         <div class="kpi"><small>مشاهدات الصفحات</small><b>${V.toLocaleString("ar")}</b>${range > 1 ? delta("views") : ""}</div>
         <div class="kpi"><small>زوار اليوم</small><b>${(today.visitors || 0).toLocaleString("ar")}</b><span class="muted">${(today.views || 0).toLocaleString("ar")} مشاهدة</span></div>
         <div class="kpi"><small>صفحات لكل زائر</small><b>${U ? (V / U).toFixed(1) : "—"}</b></div>
+        <div class="kpi"><small>حسابات جديدة</small><b>${sum(cur, "signups").toLocaleString("ar")}</b></div>
         <div class="kpi"><small>عدد الدول</small><b>${cs.filter(([k]) => /^[A-Z]{2}$/.test(k)).length}</b></div>
       </div>
       ${range > 1 ? `<div class="card"><h3>الزوار والمشاهدات يوميًا</h3><svg class="chart" viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="none">${bars}</svg><div class="chart-x"><span>${cur[0].id}</span><span>${cur[cur.length - 1].id}</span></div><div class="legend"><span><i style="background:var(--acc)"></i>مشاهدات</span><span><i style="background:var(--gold)"></i>زوار</span></div></div>` : ""}
