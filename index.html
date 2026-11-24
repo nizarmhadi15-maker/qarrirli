@@ -803,7 +803,7 @@ const card=it=>{const t=it.media_type||(it.title?"movie":"tv"),name=it.title||it
 const RNM=CN;
 const uq=l=>l.filter((v,i,a)=>a.findIndex(z=>z.provider_id===v.provider_id)===i);
 function pinfo(res,t,d){res=res||{};const g=res[REG]||{};const ALTR=["SA","AE","EG","US","GB"].filter(r=>r!==REG);const flat=uq([...(g.flatrate||[]),...(g.free||[]),...(g.ads||[])]),rent=uq([...(g.rent||[]),...(g.buy||[])]);
- let alt=null;if(!flat.length)for(const r of ALTR){const x=res[r]||{};const l=uq([...(x.flatrate||[]),...(x.free||[]),...(x.ads||[])]);if(l.length){alt={r,l};break}}
+ let alt=null;if(!flat.length)for(const r of ALTR){const x=res[r]||{};const l=uq([...(x.flatrate||[]),...(x.free||[]),...(x.ads||[])]);if(l.length){alt={r,l:l.slice(0,6)};break}}
  let st="";if(t==="movie"&&d&&!flat.length&&!rent.length){const days=(Date.now()-new Date(d))/864e5;if(days<0)st="soon";else if(days<150)st="cinema"}
  return{flat,rent,alt,st}}
 const fdate=d=>{try{return new Date(d).toLocaleDateString("ar",{day:"numeric",month:"long",year:"numeric"})}catch(e){return d}};
