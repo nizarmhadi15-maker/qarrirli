@@ -165,7 +165,7 @@ details.fg[open] summary{margin-bottom:6px}
 .modal[hidden]{display:none}.modal .box2{width:min(900px,100%)}.modal .x{display:block;margin:0 0 8px auto}
 .mc{display:block;text-decoration:none}
 .pgrid .pc{position:relative}.pc .fb{position:absolute;top:6px;inset-inline-start:6px;font-size:11px;font-weight:700;background:#cdeccf;color:#14532d;border-radius:999px;padding:2px 8px}
-.pc .pvs{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;min-height:22px}.pc .pvs img{width:22px;height:22px;border-radius:5px}.pc .pvs em{font-style:normal;font-size:12px;color:var(--mute)}
+.pc .pvs{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;min-height:22px}.pc .pvs img{width:22px;height:22px;border-radius:5px}.pst{margin:4px 0;color:#6b4a4f;font-size:15px;font-weight:600}.pc .pvs em{font-style:normal;font-size:12px;color:var(--mute)}
 @media(max-width:600px){.ticket{grid-template-columns:minmax(0,1fr) 88px;
 -webkit-mask:radial-gradient(circle 10px at 88px 0,#0000 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 10px at 88px 100%,#0000 98%,#000) bottom/100% 51% no-repeat;
 mask:radial-gradient(circle 10px at 88px 0,#0000 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 10px at 88px 100%,#0000 98%,#000) bottom/100% 51% no-repeat}
@@ -731,12 +731,19 @@ async function look(o){if(pending.has(o)||LS.tm[o]||TMI[o])return;const x=ALL.fi
   if(it&&it.poster_path)document.querySelectorAll(`img[data-po="${CSS.escape(o)}"]`).forEach(i=>i.src=IMG+"w185"+it.poster_path)}catch(e){}finally{pending.delete(o)}}
 if(TMDB_KEY.length===32){new MutationObserver(()=>document.querySelectorAll("img.pimg:not([src])").forEach(i=>look(i.dataset.po))).observe(document.body,{childList:true,subtree:true})}
 const card=it=>{const t=it.media_type||(it.title?"movie":"tv"),name=it.title||it.name,y=(it.release_date||it.first_air_date||"").slice(0,4);
- return `<button class="pc" data-id="${it.id}" data-t="${t}"><img alt="" loading="lazy" ${it.poster_path?`src="${IMG}w342${it.poster_path}"`:""}><div><b>${esc(name||"")}</b><small>${t==="movie"?"فيلم":"مسلسل"}${y?" · "+y:""}${it.vote_average?" · ⭐ "+it.vote_average.toFixed(1):""}</small><span class="pvs" data-pv="${t}/${it.id}"><em>…</em></span></div></button>`};
+ return `<button class="pc" data-id="${it.id}" data-t="${t}"><img alt="" loading="lazy" ${it.poster_path?`src="${IMG}w342${it.poster_path}"`:""}><div><b>${esc(name||"")}</b><small>${t==="movie"?"فيلم":"مسلسل"}${y?" · "+y:""}${it.vote_average?" · ⭐ "+it.vote_average.toFixed(1):""}</small><span class="pvs" data-pv="${t}/${it.id}" data-d="${it.release_date||""}"><em>…</em></span></div></button>`};
+const ALTR=["AE","EG","US","GB"],RNM={AE:"الإمارات",EG:"مصر",US:"أمريكا",GB:"بريطانيا"};
+const uq=l=>l.filter((v,i,a)=>a.findIndex(z=>z.provider_id===v.provider_id)===i);
+function pinfo(res,t,d){res=res||{};const g=res[REG]||{};const flat=uq([...(g.flatrate||[]),...(g.free||[]),...(g.ads||[])]),rent=uq([...(g.rent||[]),...(g.buy||[])]);
+ let alt=null;if(!flat.length)for(const r of ALTR){const x=res[r]||{};const l=uq([...(x.flatrate||[]),...(x.free||[]),...(x.ads||[])]);if(l.length){alt={r,l};break}}
+ let st="";if(t==="movie"&&d&&!flat.length&&!rent.length){const days=(Date.now()-new Date(d))/864e5;if(days<0)st="soon";else if(days<150)st="cinema"}
+ return{flat,rent,alt,st}}
+const fdate=d=>{try{return new Date(d).toLocaleDateString("ar",{day:"numeric",month:"long",year:"numeric"})}catch(e){return d}};
 const PVC={};
 async function fillProv(root){const els=[...root.querySelectorAll(".pvs[data-pv]")];
- await Promise.all(els.map(async el=>{const k=el.dataset.pv;try{if(!PVC[k]){const r=await tm(`/${k}/watch/providers`,{language:undefined});const g=(r.results||{})[REG]||{};
-   const l=[...(g.flatrate||[]),...(g.free||[]),...(g.ads||[])];const b=[...(g.rent||[]),...(g.buy||[])];PVC[k]={l:l.filter((v,i,a)=>a.findIndex(z=>z.provider_id===v.provider_id)===i).slice(0,4),b:b.length}}
-  const c=PVC[k];el.innerHTML=c.l.length?c.l.map(p=>`<img alt="${esc(p.provider_name)}" title="${esc(p.provider_name)}" src="${IMG}w92${p.logo_path}">`).join(""):`<em>${c.b?"للإيجار أو الشراء":"غير متوفر في السعودية"}</em>`}catch(e){el.innerHTML=""}}))}
+ await Promise.all(els.map(async el=>{const k=el.dataset.pv;try{if(!PVC[k]){const r=await tm(`/${k}/watch/providers`,{language:undefined});PVC[k]=pinfo(r.results,k.split("/")[0],el.dataset.d)}
+  const c=PVC[k],ic=l=>l.slice(0,4).map(p=>`<img alt="${esc(p.provider_name)}" title="${esc(p.provider_name)}" src="${IMG}w92${p.logo_path}">`).join("");
+  el.innerHTML=c.flat.length?ic(c.flat):c.st==="cinema"?"<em>🎬 في السينما الآن</em>":c.st==="soon"?"<em>⏳ لم يُعرض بعد</em>":c.rent.length?`${ic(c.rent)}<em>إيجار/شراء</em>`:c.alt?`${ic(c.alt.l)}<em>في ${RNM[c.alt.r]}</em>`:"<em>غير متوفر حاليًا</em>"}catch(e){el.innerHTML=""}}))}
 let xtype="all";
 async function trending(){const g=$("#xgrid");if(TMDB_KEY.length!==32){g.innerHTML='<div class="empty">قريبًا.</div>';return}
  g.innerHTML='<p class="hint">جاري التحميل…</p>';try{const r=await tm(`/trending/${xtype}/week`);g.innerHTML=r.results.filter(i=>i.media_type!=="person").map(card).join("");fillProv(g);$("#xh").textContent="الأكثر رواجًا هذا الأسبوع"}catch(e){g.innerHTML='<div class="empty">تعذّر التحميل الآن، جرّب بعد قليل.</div>'}}
@@ -747,13 +754,13 @@ $("#xgo").onclick=xsearch;$("#xq").addEventListener("keydown",e=>{if(e.key==="En
 $("#xgrid").onclick=e=>{const b=e.target.closest(".pc");if(b)showDet(b,$("#xdet"))};
 async function showDet(b,d){d.innerHTML='<p class="hint">جاري التحميل…</p>';
  try{const t=b.dataset.t,id=b.dataset.id;const[it,pv,vd]=await Promise.all([tm(`/${t}/${id}`),tm(`/${t}/${id}/watch/providers`,{language:undefined}).catch(()=>({})),getVid(t,id).catch(()=>null)]);
-  const rg=(pv.results||{})[REG]||{},flat=[...(rg.flatrate||[]),...(rg.free||[]),...(rg.ads||[])],rent=[...(rg.rent||[]),...(rg.buy||[])].filter((v,i,a)=>a.findIndex(z=>z.provider_id===v.provider_id)===i);
+  const PI=pinfo(pv.results,t,it.release_date),flat=PI.flat,rent=PI.rent;
   const prov=l=>l.map(p=>`<span><img alt="" src="${IMG}w92${p.logo_path}">${esc(p.provider_name)}</span>`).join("");
   const name=it.title||it.name,y=(it.release_date||it.first_air_date||"").slice(0,4),len=it.runtime?it.runtime+" دقيقة":it.number_of_episodes?it.number_of_episodes+" حلقة":"";
   const local=ALL.find(x=>x.o.toLowerCase()===(it.original_title||it.original_name||"").toLowerCase()||x.o.toLowerCase()===(name||"").toLowerCase());
   d.innerHTML=`<article class="det">${it.poster_path?`<img alt="" src="${IMG}w342${it.poster_path}">`:"<div></div>"}<div><div class="t-kind">${t==="movie"?"فيلم":"مسلسل"}${y?" · "+y:""}${len?" · "+len:""}${it.vote_average?" · ⭐ "+it.vote_average.toFixed(1):""}</div><h2>${esc(name)}</h2><div class="t-orig">${esc(it.original_title||it.original_name||"")}</div>
   <p class="t-why">${esc(it.overview||"لا يوجد وصف بالعربي لهذا العمل بعد.")}</p>${(it.genres||[]).length?`<div class="chips">${it.genres.map(g=>`<span class="chip">${esc(g.name)}</span>`).join("")}</div>`:""}
-  ${vd?`<p style="font-weight:700;margin:14px 0 0">الإعلان الرسمي:</p>${vidFrame(vd.key)}`:""}<p style="font-weight:700;margin:14px 0 0">أين تشاهده (السعودية):</p>${flat.length?`<div class="prov">${prov(flat)}</div>`:'<p class="hint" style="margin:4px 0;color:#6b4a4f">غير متوفر باشتراك حاليًا.</p>'}${rent.length?`<p style="margin:10px 0 0;font-size:14px">للإيجار أو الشراء:</p><div class="prov">${prov(rent)}</div>`:""}
+  ${vd?`<p style="font-weight:700;margin:14px 0 0">الإعلان الرسمي:</p>${vidFrame(vd.key)}`:""}<p style="font-weight:700;margin:14px 0 0">أين تشاهده (السعودية):</p>${flat.length?`<div class="prov">${prov(flat)}</div>`:PI.st==="cinema"?'<p class="pst">🎬 يُعرض الآن في صالات السينما، ولم يصل للمنصات بعد.</p>':PI.st==="soon"?`<p class="pst">⏳ لم يُعرض بعد — موعد عرضه ${fdate(it.release_date)}.</p>`:rent.length?"":'<p class="pst">غير متوفر باشتراك في السعودية حاليًا.</p>'}${!flat.length&&PI.alt?`<p style="margin:10px 0 0;font-size:14px">متوفر باشتراك في ${RNM[PI.alt.r]} على:</p><div class="prov">${prov(PI.alt.l)}</div>`:""}${(it.networks||[]).length?`<p style="margin:10px 0 0;font-size:14px">القناة/المنصة الأصلية للمسلسل:</p><div class="prov">${prov(it.networks.filter(n=>n.logo_path).slice(0,3).map(n=>({logo_path:n.logo_path,provider_name:n.name})))}</div>`:""}${rent.length?`<p style="margin:10px 0 0;font-size:14px">للإيجار أو الشراء:</p><div class="prov">${prov(rent)}</div>`:""}
   ${local?`${gdet(local,true)}${acts(local)}`:`<p class="hint" style="color:#6b4a4f;margin-top:12px">دليل العائلة لهذا العمل غير متوفر بعد.</p>`}</div></article>`;d.scrollIntoView({block:"start"})}catch(err){d.innerHTML='<div class="empty">تعذّر تحميل التفاصيل.</div>'}}
 
 /* ===== الإعلان الرسمي ===== */
