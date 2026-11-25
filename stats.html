@@ -43,6 +43,8 @@ label.sw{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--mute
 .hbx{display:flex;gap:3px;direction:rtl;color:var(--mute);font-size:11px}.hbx span{flex:1;text-align:center}
 .best{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 14px}.best b{background:rgba(255,209,102,.15);border:1px solid rgba(255,209,102,.4);color:var(--gold);padding:6px 12px;border-radius:999px;font-size:14px}
 .tg{display:inline-flex;gap:4px;margin-inline-start:8px}.tg button{font:inherit;font-size:13px;padding:3px 10px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--ink);cursor:pointer}.tg button.on{background:var(--acc);color:#2a0a12;border-color:var(--acc)}
+.rk{display:flex;flex-wrap:wrap;align-items:center;gap:14px}.rk .num{font-family:Lalezar,serif;font-size:44px;line-height:1;color:var(--gold)}
+.lk{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.lk a{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:999px;border:1px solid var(--line);color:var(--ink);text-decoration:none;font-size:14px}.lk a:hover{background:rgba(255,93,115,.15);border-color:var(--acc)}
 </style>
 </head>
 <body>
@@ -100,6 +102,16 @@ onAuthStateChanged(auth, async u => {
     html += `<h3 style="margin:18px 0 0;font-size:15px">حسب الساعة (كل الأيام) — الذروة ${hlab(peakH)}</h3><div class="hbar">${byH.map((v, h) => `<i title="${hlab(h)}: ${v}" style="height:${Math.round(v / mh * 100)}%"></i>`).join("")}</div><div class="hbx">${byH.map((_, h) => `<span>${h % 3 === 0 ? hlab(h) : ""}</span>`).join("")}</div>`;
     return html;
   };
+  let RANK = null;
+  const rankHtml = () => {
+    if (RANK === null) return '<span class="muted">جاري فحص الترتيب…</span>';
+    if (RANK === "err") return '<span class="muted">تعذّر الاتصال بخدمة الترتيب الآن، جرّب لاحقًا.</span>';
+    const r = RANK.ranks && RANK.ranks.length ? RANK.ranks.slice().sort((a, b) => b.date.localeCompare(a.date))[0] : null;
+    if (!r) return `<div class="rk"><span class="num">—</span><div><b>الموقع لسه خارج قائمة أفضل مليون موقع في العالم</b><div class="muted">هذا طبيعي لموقع جديد. الترتيب يظهر تلقائيًا هنا لما يكبر عدد الزوار ويدخل القائمة.</div></div></div>`;
+    const tier = r.rank <= 10000 ? "🔥 من أفضل 10 آلاف موقع" : r.rank <= 100000 ? "🚀 من أفضل 100 ألف موقع" : "✅ ضمن أفضل مليون موقع";
+    return `<div class="rk"><span class="num">#${r.rank.toLocaleString("ar")}</span><div><b>${tier}</b><div class="muted">حسب قائمة Tranco بتاريخ ${esc(r.date)}</div></div></div>`;
+  };
+  fetch("https://tranco-list.eu/api/ranks/domain/qarrirli.com").then(r => r.ok ? r.json() : Promise.reject()).then(j => RANK = j).catch(() => RANK = "err").finally(() => { const b = $("#rkb"); if (b) b.innerHTML = rankHtml(); });
   const draw = () => {
     const cur = docs.slice(-range), prev = docs.slice(-2 * range, -range), today = docs[docs.length - 1];
     const sum = (a, f) => a.reduce((t, d) => t + (d[f] || 0), 0);
@@ -120,6 +132,16 @@ onAuthStateChanged(auth, async u => {
         <div class="kpi"><small>حسابات جديدة</small><b>${sum(cur, "signups").toLocaleString("ar")}</b></div>
         <div class="kpi"><small>عدد الدول</small><b>${cs.filter(([k]) => /^[A-Z]{2}$/.test(k)).length}</b></div>
       </div>
+      <div class="card"><h3>🌍 ترتيب موقعك عالميًا</h3><div id="rkb">${rankHtml()}</div>
+        <p class="muted" style="margin:10px 0 0">الترتيب من <b>Tranco</b>، وهي قائمة بحثية مجانية لأكثر مواقع العالم زيارة، وتتحدث يوميًا. افحص الترتيب والأرشفة من مصادر ثانية كمان:</p>
+        <div class="lk">
+          <a href="https://www.similarweb.com/website/qarrirli.com/" target="_blank" rel="noopener">📊 Similarweb</a>
+          <a href="https://tranco-list.eu/query" target="_blank" rel="noopener">🏆 Tranco</a>
+          <a href="https://ahrefs.com/website-authority-checker?input=qarrirli.com" target="_blank" rel="noopener">🔗 قوة الدومين (Ahrefs)</a>
+          <a href="https://www.google.com/search?q=site%3Aqarrirli.com" target="_blank" rel="noopener">🔍 الصفحات المؤرشفة في جوجل</a>
+          <a href="https://search.google.com/search-console?resource_id=sc-domain%3Aqarrirli.com" target="_blank" rel="noopener">🧭 Search Console</a>
+          <a href="https://pagespeed.web.dev/analysis?url=https%3A%2F%2Fqarrirli.com%2F" target="_blank" rel="noopener">⚡ سرعة الموقع</a>
+        </div></div>
       ${range > 1 ? `<div class="card"><h3>الزوار والمشاهدات يوميًا</h3><svg class="chart" viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="none">${bars}</svg><div class="chart-x"><span>${cur[0].id}</span><span>${cur[cur.length - 1].id}</span></div><div class="legend"><span><i style="background:var(--acc)"></i>مشاهدات</span><span><i style="background:var(--gold)"></i>زوار</span></div></div>` : ""}
       <div class="card"><h3>🕒 متى يكون الزوار أكثر؟ <span class="tg"><button data-m="vhours" class="${hm === "vhours" ? "on" : ""}">زوار</button><button data-m="hours" class="${hm === "hours" ? "on" : ""}">مشاهدات</button></span></h3>
         <p class="muted" style="margin:0">بتوقيتك أنت (${esc(TZN)})، خلال الفترة المختارة. كل ما كان المربع أوضح لونًا، كان الضغط على الموقع أكثر.</p>
