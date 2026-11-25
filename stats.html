@@ -35,6 +35,14 @@ h3{margin:0 0 10px;font-size:17px}
 .empty{color:var(--mute);font-size:14px;padding:8px}
 .center{text-align:center;padding:50px 10px}
 label.sw{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--mute);cursor:pointer}
+.hm{display:grid;grid-template-columns:54px repeat(24,1fr);gap:3px;direction:rtl;font-size:11px}
+.hm .c{aspect-ratio:1;border-radius:4px;background:rgba(255,93,115,.06)}
+.hm .dl{display:flex;align-items:center;color:var(--mute);font-size:12.5px}
+.hm .hl{text-align:center;color:var(--mute);direction:ltr}
+.hbar{display:flex;align-items:flex-end;gap:3px;height:120px;direction:rtl;margin-top:6px}.hbar i{flex:1;background:var(--acc);border-radius:3px 3px 0 0;min-height:2px;opacity:.85}
+.hbx{display:flex;gap:3px;direction:rtl;color:var(--mute);font-size:11px}.hbx span{flex:1;text-align:center}
+.best{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 14px}.best b{background:rgba(255,209,102,.15);border:1px solid rgba(255,209,102,.4);color:var(--gold);padding:6px 12px;border-radius:999px;font-size:14px}
+.tg{display:inline-flex;gap:4px;margin-inline-start:8px}.tg button{font:inherit;font-size:13px;padding:3px 10px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--ink);cursor:pointer}.tg button.on{background:var(--acc);color:#2a0a12;border-color:var(--acc)}
 </style>
 </head>
 <body>
@@ -73,6 +81,25 @@ onAuthStateChanged(auth, async u => {
   const docs = await Promise.all(days.map(id => getDoc(doc(db, "stats", id)).then(s => ({ id, ...(s.exists() ? s.data() : {}) })).catch(e => { if (e.code === "permission-denied") denied = true; return { id }; })));
   if (denied) return login("قاعدة البيانات رفضت القراءة لهذا الحساب.");
   let range = +(sessionStorage.getItem("qr-range") || 7);
+  let hm = sessionStorage.getItem("qr-hm") || "vhours";
+  const TZN = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch { return ""; } })();
+  const DAYS = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"], ORD = [6, 0, 1, 2, 3, 4, 5];
+  const hlab = h => h === 0 ? "12ص" : h < 12 ? h + "ص" : h === 12 ? "12م" : (h - 12) + "م";
+  const heat = docs_ => {
+    const g = Array.from({ length: 7 }, () => Array(24).fill(0)), byH = Array(24).fill(0); let tot = 0;
+    docs_.forEach(d => { const [y, m, dd] = d.id.split("-").map(Number); Object.entries(d[hm] || {}).forEach(([h, v]) => { const t = new Date(Date.UTC(y, m - 1, dd, +h)); g[t.getDay()][t.getHours()] += v; byH[t.getHours()] += v; tot += v; }); });
+    if (!tot) return '<div class="empty" style="margin-top:10px">لسه ما في بيانات كافية. هذي الخاصية بدأت تسجّل من اليوم، فارجع بعد كم يوم وتشوف الصورة واضحة.</div>';
+    const mx = Math.max(1, ...g.flat()), mh = Math.max(1, ...byH);
+    const top = []; g.forEach((r, d) => r.forEach((v, h) => v && top.push([v, d, h]))); top.sort((a, b) => b[0] - a[0]);
+    const best = top.slice(0, 3).map(([v, d, h]) => `<b>${DAYS[d]} ${hlab(h)} – ${hlab((h + 1) % 24)}</b>`).join("");
+    const peakH = byH.indexOf(mh);
+    let html = `<div class="best"><span class="muted" style="align-self:center">أكثر الأوقات ضغطًا:</span>${best}</div>`;
+    html += '<div class="hm"><div></div>' + Array.from({ length: 24 }, (_, h) => `<div class="hl">${h % 3 === 0 ? hlab(h) : ""}</div>`).join("");
+    ORD.forEach(d => { html += `<div class="dl">${DAYS[d]}</div>` + g[d].map((v, h) => `<div class="c" title="${DAYS[d]} ${hlab(h)}: ${v}" style="${v ? `background:rgba(255,93,115,${(0.15 + 0.85 * v / mx).toFixed(2)})` : ""}"></div>`).join(""); });
+    html += '</div>';
+    html += `<h3 style="margin:18px 0 0;font-size:15px">حسب الساعة (كل الأيام) — الذروة ${hlab(peakH)}</h3><div class="hbar">${byH.map((v, h) => `<i title="${hlab(h)}: ${v}" style="height:${Math.round(v / mh * 100)}%"></i>`).join("")}</div><div class="hbx">${byH.map((_, h) => `<span>${h % 3 === 0 ? hlab(h) : ""}</span>`).join("")}</div>`;
+    return html;
+  };
   const draw = () => {
     const cur = docs.slice(-range), prev = docs.slice(-2 * range, -range), today = docs[docs.length - 1];
     const sum = (a, f) => a.reduce((t, d) => t + (d[f] || 0), 0);
@@ -94,6 +121,9 @@ onAuthStateChanged(auth, async u => {
         <div class="kpi"><small>عدد الدول</small><b>${cs.filter(([k]) => /^[A-Z]{2}$/.test(k)).length}</b></div>
       </div>
       ${range > 1 ? `<div class="card"><h3>الزوار والمشاهدات يوميًا</h3><svg class="chart" viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="none">${bars}</svg><div class="chart-x"><span>${cur[0].id}</span><span>${cur[cur.length - 1].id}</span></div><div class="legend"><span><i style="background:var(--acc)"></i>مشاهدات</span><span><i style="background:var(--gold)"></i>زوار</span></div></div>` : ""}
+      <div class="card"><h3>🕒 متى يكون الزوار أكثر؟ <span class="tg"><button data-m="vhours" class="${hm === "vhours" ? "on" : ""}">زوار</button><button data-m="hours" class="${hm === "hours" ? "on" : ""}">مشاهدات</button></span></h3>
+        <p class="muted" style="margin:0">بتوقيتك أنت (${esc(TZN)})، خلال الفترة المختارة. كل ما كان المربع أوضح لونًا، كان الضغط على الموقع أكثر.</p>
+        ${heat(cur)}</div>
       <div class="grid">
         <div class="card"><h3>الدول</h3><div class="scroll">${list(cs, ccLabel, U, 80)}</div></div>
         <div class="card"><h3>أكثر الصفحات زيارة</h3><div class="scroll">${list(ps, k => esc(pageName(k)), V, 50)}</div></div>
@@ -106,6 +136,7 @@ onAuthStateChanged(auth, async u => {
     el.querySelectorAll(".chip[data-r]").forEach(b => b.onclick = () => { range = +b.dataset.r; sessionStorage.setItem("qr-range", range); draw(); });
     $("#nt").onchange = e => { try { e.target.checked ? localStorage.setItem("qr-notrack", "1") : localStorage.removeItem("qr-notrack"); } catch {} };
     $("#so").onclick = () => signOut(auth);
+    el.querySelectorAll(".tg button").forEach(b => b.onclick = () => { hm = b.dataset.m; sessionStorage.setItem("qr-hm", hm); draw(); });
   };
   draw();
 });

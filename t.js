@@ -15,8 +15,8 @@ var dev=/iPad|Tablet/i.test(ua)?"tablet":/Mobi|Android|iPhone/i.test(ua)?"mobile
 var pg=location.pathname.replace(/^\/|\.html$/g,"").replace(/\//g,"_")||"home";if(pg==="index")pg="home";pg=pg.slice(0,80);
 var ref="direct";try{if(document.referrer){var h=new URL(document.referrer).hostname.replace(/^www\.|^m\.|^l\.|^lm\./,"");if(h!=="qarrirli.com"){ref=/google\./.test(h)?"google":/bing\./.test(h)?"bing":/facebook|fb\./.test(h)?"facebook":/instagram/.test(h)?"instagram":/^t\.co$|twitter|x\.com/.test(h)?"x":/youtube|youtu\.be/.test(h)?"youtube":/whatsapp|wa\.me/.test(h)?"whatsapp":/telegram|t\.me/.test(h)?"telegram":/tiktok/.test(h)?"tiktok":/yahoo|duckduckgo|yandex/.test(h)?"other-search":h.slice(0,40).replace(/[`.]/g,"_")}else ref=""}}catch(e){}
 function inc(f){return{fieldPath:f,increment:{integerValue:"1"}}}
-var ft=[inc("views"),inc("pages.`"+pg+"`")];
-if(isNew){ft.push(inc("visitors"),inc("countries.`"+cc+"`"),inc("devices.`"+dev+"`"));if(ref)ft.push(inc("refs.`"+ref+"`"))}
+var hr=String(new Date().getUTCHours());var ft=[inc("views"),inc("pages.`"+pg+"`"),inc("hours.`"+hr+"`")];
+if(isNew){ft.push(inc("visitors"),inc("vhours.`"+hr+"`"),inc("countries.`"+cc+"`"),inc("devices.`"+dev+"`"));if(ref)ft.push(inc("refs.`"+ref+"`"))}
 var body=JSON.stringify({writes:[{transform:{document:"projects/"+P+"/databases/(default)/documents/stats/"+day,fieldTransforms:ft}}]});
 fetch("https://firestore.googleapis.com/v1/projects/"+P+"/databases/(default)/documents:commit?key="+K,{method:"POST",headers:{"Content-Type":"application/json"},body:body,keepalive:true}).catch(function(){});
 }catch(e){}})();
