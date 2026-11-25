@@ -138,6 +138,26 @@ details.fg[open] summary{margin-bottom:6px}
 .ab[aria-pressed=true]{background:#2a0a12;color:#fff6ee;border-color:#2a0a12}
 .warn{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.warn span{font-size:13px;padding:3px 10px;border-radius:999px;background:#fde3c8;color:#7a3b00;white-space:nowrap}
 .worth{margin:10px 0 0;padding:8px 12px;border-radius:10px;background:#efe3f7;color:#3e1f55;font-size:14.5px}
+.hero2{background:linear-gradient(165deg,var(--card),var(--bg2));border:1px solid var(--line);border-radius:22px;padding:22px 18px 16px;margin:4px 0 22px;text-align:center}
+.hero2 h1{margin:0 0 6px}.hsub{color:var(--mute);margin:0 auto 16px;max-width:560px}.hsub b{color:var(--ink)}
+.hsr{position:relative;display:flex;gap:8px;max-width:640px;margin:0 auto}
+.hsr input{flex:1;min-width:0;font:inherit;font-size:18px;padding:13px 18px;border-radius:16px;border:2px solid var(--acc);background:var(--bg);color:var(--ink);box-shadow:0 6px 26px rgba(255,93,115,.22);outline:none}
+.hsr input:focus{box-shadow:0 0 0 4px rgba(255,93,115,.3)}.hsr .btn{border-radius:16px}
+.hsug{position:absolute;top:calc(100% + 6px);inset-inline:0;background:var(--card);border:1px solid var(--line);border-radius:14px;z-index:30;text-align:start;overflow:hidden;box-shadow:0 14px 34px rgba(0,0,0,.45)}
+.hsug button{display:flex;gap:10px;align-items:center;width:100%;padding:8px 12px;background:none;border:0;border-bottom:1px solid rgba(107,34,52,.5);color:var(--ink);font:inherit;cursor:pointer;text-align:start}
+.hsug button:hover,.hsug button.on{background:rgba(255,93,115,.16)}.hsug img,.hsug i{width:34px;height:51px;object-fit:cover;border-radius:6px;background:var(--bg2);flex:none}
+.hsug small{color:var(--mute);display:block;font-size:12.5px}.hsug .hall{justify-content:center;color:var(--acc);font-weight:700;border:0}
+.hor{display:flex;align-items:center;gap:10px;max-width:260px;margin:14px auto;color:var(--mute);font-size:14px}.hor:before,.hor:after{content:"";flex:1;border-top:1px solid var(--line)}
+.btn.hpick{background:transparent;color:var(--ink);border:2px dashed var(--acc);font-size:17px}.btn.hpick:hover{background:rgba(255,93,115,.12)}
+.htr{margin-top:18px;text-align:start}.htr-h{font-weight:700;margin-bottom:8px}.htr-h small{color:var(--mute);font-weight:400;font-size:12.5px;margin-inline-start:6px}
+.hrow{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;min-height:166px;scrollbar-width:thin}
+.hrow button{flex:0 0 92px;background:none;border:0;padding:0;cursor:pointer;color:var(--ink);font:inherit;font-size:12.5px;text-align:center}
+.hrow img,.hrow i{width:92px;height:138px;object-fit:cover;border-radius:10px;display:block;margin-bottom:4px;background:var(--bg2)}.hrow span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hrow button:hover img{outline:2px solid var(--acc)}
+.hsim h3{margin:22px 0 10px;font-size:19px}.hoth{margin:22px 0 10px;font-size:17px;color:var(--mute)}
+#hres:empty{display:none}#hres{margin:-8px 0 26px}
+@media(max-width:560px){.hero2{padding:18px 12px 12px}.hsr input{font-size:16px;padding:12px 14px}.hsr .btn{padding:10px 14px}}
+.panel.flash{animation:fl 1.6s}@keyframes fl{0%,60%{box-shadow:0 0 0 4px var(--acc)}100%{box-shadow:none}}
 #daily{min-height:125px}#daily:not(:empty){min-height:0}
 .dl{display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--bg2);border:1px dashed var(--acc);border-radius:16px;padding:12px 16px;margin:0 0 18px}
 .dl b{font-family:Lalezar,serif;font-weight:400;font-size:24px}.dl small{color:var(--mute);display:block}
@@ -214,9 +234,18 @@ mask:radial-gradient(circle 10px at 88px 0,#0000 98%,#000) top/100% 51% no-repea
 <nav class="tabs" aria-label="أقسام الموقع"><a href="#pick" data-v="pick">قرّرلي أنا</a><a href="#together" data-v="together">اختاروا معًا</a><a href="#like" data-v="like">أفلام تشبه…</a><a href="#family" data-v="family">دليل العائلة</a><a href="#new" data-v="new">🆕 جديد</a><a href="#explore" data-v="explore">رائج وبحث</a><a href="#guides" data-v="guides">ترتيب المشاهدة</a><a href="#mine" data-v="mine">قائمتي</a></nav>
 <main id="v-pick" class="view">
 
-<h1>محتار شو تشوف الليلة؟</h1>
+<section class="hero2" aria-label="ابحث عن فيلم أو مسلسل">
+  <h1>محتار شو تشوف الليلة؟</h1>
+  <p class="hsub">اكتب اسم أي فيلم أو مسلسل واعرف <b>وين يُعرض في <span id="hreg">بلدك</span></b>، هل يناسب العائلة، وشو يشبهه.</p>
+  <form class="hsr" id="hf" role="search" autocomplete="off"><input id="hq" type="search" enterkeyhint="search" placeholder="اكتب اسم فيلم أو مسلسل…" aria-label="ابحث عن فيلم أو مسلسل" aria-autocomplete="list" aria-controls="hsug"><button class="btn acc" type="submit">ابحث</button><div id="hsug" class="hsug" role="listbox" hidden></div></form>
+  <div class="hor"><span>أو</span></div>
+  <button class="btn hpick" id="hpick" type="button">🎲 مش عارف شو بدي… قرّرلي أنا</button>
+  <div class="htr"><div class="htr-h">🔥 الرائج هالأسبوع <small>اضغط على أي عمل</small></div><div id="htrend" class="hrow"></div></div>
+</section>
+<section id="hres" aria-live="polite"></section>
+
 <div id="daily"></div>
-<p class="lead">جاوب على أسئلة سريعة، ونطبع لك ثلاث تذاكر فقط تناسب مزاجك ووقتك ومن معك.</p>
+<p class="lead" id="plead">🎲 <b>قرّرلي أنا:</b> جاوب على أسئلة سريعة، ونطبع لك ثلاث تذاكر فقط تناسب مزاجك ووقتك ومن معك.</p>
 
 <section class="panel" aria-label="أسئلة الاختيار">
   <div class="q" data-k="mood"><h2><span>١</span>كيف مزاجك الآن؟</h2><div class="opts">
@@ -821,6 +850,34 @@ async function xsearch(){const q=$("#xq").value.trim();if(!q)return;const g=$("#
  try{const r=await tm("/search/multi",{query:q});const l=r.results.filter(i=>i.media_type!=="person");$("#xh").textContent=l.length?`نتائج "${q}"`:`ما لقينا نتائج لـ "${q}"`;g.innerHTML=l.map(card).join("");fillProv(g);$("#xh").scrollIntoView({block:"start"})}catch(e){g.innerHTML='<div class="empty">تعذّر البحث الآن.</div>'}}
 $("#xgo").onclick=xsearch;$("#xq").addEventListener("keydown",e=>{if(e.key==="Enter")xsearch()});
 $("#xgrid").onclick=e=>{const b=e.target.closest(".pc");if(b)showDet(b,$("#xdet"))};
+/* ===== البحث البارز في الواجهة ===== */
+{const hq=$("#hq"),hs=$("#hsug"),hr=$("#hres");let ht=0,hseq=0,hi=-1,hl=[];
+ try{$("#hreg").textContent=CN[REG]||"بلدك"}catch(e){}
+ const hy=it=>(it.release_date||it.first_air_date||"").slice(0,4),hk=it=>it.media_type||(it.title?"movie":"tv");
+ const hclose=()=>{hs.hidden=true;hs.innerHTML="";hi=-1;hq.setAttribute("aria-expanded","false")};
+ async function hopen(t,id){hclose();hr.innerHTML='<section id="hdet"></section>';const d=$("#hdet");await showDet({dataset:{t,id:String(id)}},d);
+  try{const r=await tm(`/${t}/${id}/recommendations`);const l=(r.results||[]).filter(x=>x.poster_path).slice(0,8);
+   if(l.length&&$("#hdet")===d){d.insertAdjacentHTML("beforeend",`<div class="hsim"><h3>🔁 أعمال تشبهه</h3><div class="pgrid">${l.map(x=>card({...x,media_type:x.media_type||t})).join("")}</div></div>`);fillProv(d.querySelector(".hsim"))}}catch(e){}}
+ hr.onclick=e=>{const b=e.target.closest(".pc");if(b){e.preventDefault();hopen(b.dataset.t,b.dataset.id)}};
+ async function hsearch(q){q=(q||hq.value).trim();if(!q)return hq.focus();hclose();hr.innerHTML='<p class="hint">جاري البحث…</p>';
+  try{const r=await tm("/search/multi",{query:q});const l=r.results.filter(i=>i.media_type!=="person");
+   if(!l.length){hr.innerHTML=`<div class="empty">ما لقينا "${esc(q)}". جرّب تكتب الاسم بالإنجليزي أو بطريقة ثانية.</div>`;return}
+   await hopen(l[0].media_type,l[0].id);const rest=l.slice(1,13);
+   if(rest.length){hr.insertAdjacentHTML("beforeend",`<h3 class="hoth">مش هذا اللي بتدوّر عليه؟</h3><div class="pgrid" id="hoth">${rest.map(card).join("")}</div>`);fillProv($("#hoth"))}}
+  catch(e){hr.innerHTML='<div class="empty">تعذّر البحث الآن، جرّب بعد قليل.</div>'}}
+ $("#hf").onsubmit=e=>{e.preventDefault();if(hi>=0&&hl[hi]){const x=hl[hi];hq.value=x.title||x.name;hopen(hk(x),x.id)}else hsearch()};
+ const hpaint=()=>{hs.innerHTML=hl.map((x,i)=>`<button type="button" role="option" data-i="${i}" class="${i===hi?"on":""}">${x.poster_path?`<img alt="" src="${IMG}w92${x.poster_path}">`:"<i></i>"}<span><b>${esc(x.title||x.name||"")}</b><small>${hk(x)==="movie"?"فيلم":"مسلسل"}${hy(x)?" · "+hy(x):""}${(x.original_title||x.original_name)&&(x.original_title||x.original_name)!==(x.title||x.name)?" · "+esc(x.original_title||x.original_name):""}</small></span></button>`).join("")+`<button type="button" class="hall" data-all="1">🔍 كل النتائج لـ "${esc(hq.value.trim())}"</button>`;hs.hidden=false;hq.setAttribute("aria-expanded","true")};
+ hq.addEventListener("input",()=>{clearTimeout(ht);const q=hq.value.trim();if(q.length<2){hclose();return}
+  ht=setTimeout(async()=>{const my=++hseq;try{const r=await tm("/search/multi",{query:q});if(my!==hseq||hq.value.trim()!==q)return;hl=r.results.filter(i=>i.media_type!=="person").slice(0,6);hi=-1;if(hl.length)hpaint();else hclose()}catch(e){}},280)});
+ hq.addEventListener("keydown",e=>{if(hs.hidden)return;if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();hi=(hi+(e.key==="ArrowDown"?1:-1)+hl.length+1)%(hl.length+1);if(hi===hl.length)hi=-1;hpaint()}else if(e.key==="Escape")hclose()});
+ hs.addEventListener("mousedown",e=>e.preventDefault());
+ hs.onclick=e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.all)return hsearch();const x=hl[+b.dataset.i];hq.value=x.title||x.name;hopen(hk(x),x.id)};
+ hq.addEventListener("blur",()=>setTimeout(hclose,150));
+ $("#hpick").onclick=()=>{const p=document.querySelector("#v-pick .panel");$("#plead").scrollIntoView({behavior:"smooth",block:"start"});p&&p.classList.add("flash");setTimeout(()=>p&&p.classList.remove("flash"),1600)};
+ (async()=>{const g=$("#htrend");try{const r=await tm("/trending/all/week");g.innerHTML=r.results.filter(i=>i.media_type!=="person"&&i.poster_path).slice(0,14).map(x=>`<button type="button" data-t="${x.media_type}" data-id="${x.id}" title="${esc(x.title||x.name||"")}"><img alt="" loading="lazy" src="${IMG}w185${x.poster_path}"><span>${esc(x.title||x.name||"")}</span></button>`).join("")}catch(e){g.parentElement.hidden=true}
+  g.onclick=e=>{const b=e.target.closest("button");if(!b)return;hq.value=b.title;hopen(b.dataset.t,b.dataset.id)}})();
+}
+
 document.addEventListener("click",e=>{const rb=e.target.closest(".regb");if(!rb)return;e.preventDefault();
  const sel=document.createElement("select");sel.className="regs";sel.innerHTML=Object.entries(CN).map(([k,v])=>`<option value="${k}"${k===REG?" selected":""}>${v}</option>`).join("");
  rb.replaceWith(sel);sel.focus();sel.onchange=()=>{REG=sel.value;try{localStorage.setItem("ft-reg",REG)}catch(x){};for(const k in PVC)delete PVC[k];
