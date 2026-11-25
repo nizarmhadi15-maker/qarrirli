@@ -18,7 +18,7 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","name":"قرّرلي","alternateName":"Qarrirli","url":"https://qarrirli.com/","inLanguage":"ar","description":"موقع عربي يختار لك فيلمًا أو مسلسلًا في 30 ثانية حسب مزاجك ووقتك ومن معك، مع دليل محتوى للعائلة."},{"@type":"Organization","name":"قرّرلي","url":"https://qarrirli.com/","logo":"https://qarrirli.com/icon-512.png","email":"contact@qarrirli.com"}]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Lalezar&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Lalezar&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" onload="this.onload=null;this.rel='stylesheet'"><noscript><link href="https://fonts.googleapis.com/css2?family=Lalezar&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet"></noscript>
 <style>
 /* VOICE: صديق سينمائي ودود يحسم الحيرة بسرعة، بلا ثرثرة
    IDEA: شبّاك تذاكر السينما — تجيب ثلاثة أسئلة فتُطبع لك تذاكر الليلة
@@ -138,6 +138,7 @@ details.fg[open] summary{margin-bottom:6px}
 .ab[aria-pressed=true]{background:#2a0a12;color:#fff6ee;border-color:#2a0a12}
 .warn{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.warn span{font-size:13px;padding:3px 10px;border-radius:999px;background:#fde3c8;color:#7a3b00;white-space:nowrap}
 .worth{margin:10px 0 0;padding:8px 12px;border-radius:10px;background:#efe3f7;color:#3e1f55;font-size:14.5px}
+#daily{min-height:125px}@media(max-width:560px){#daily{min-height:170px}}#daily:not(:empty){min-height:0}
 .dl{display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--bg2);border:1px dashed var(--acc);border-radius:16px;padding:12px 16px;margin:0 0 18px}
 .dl b{font-family:Lalezar,serif;font-weight:400;font-size:24px}.dl small{color:var(--mute);display:block}
 .dl button{margin-inline-start:auto}
@@ -165,7 +166,7 @@ details.fg[open] summary{margin-bottom:6px}
 .tmdb{display:inline-flex;align-items:center;gap:8px;margin-top:6px}.tmdb b{background:linear-gradient(90deg,#90cea1,#01b4e4);color:#0d253f;padding:2px 10px;border-radius:6px;font-weight:800;letter-spacing:.5px}
 @media(max-width:600px){.det{grid-template-columns:1fr}.det img{max-width:180px}}
 
-.vid{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000;margin-top:12px}.vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vid{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000;margin-top:12px}.vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0}.vid .yt{position:absolute;inset:0;width:100%;height:100%;border:0;padding:0;background:#000 center/cover no-repeat;cursor:pointer}.vid .yt span{display:grid;place-items:center;width:68px;height:48px;margin:auto;border-radius:14px;background:rgba(230,0,0,.9);color:#fff;font-size:22px;box-shadow:0 4px 18px rgba(0,0,0,.5)}.vid .yt:hover span{background:#f00}
 .acct{display:inline-flex;align-items:center;gap:8px;font:inherit;font-weight:700;font-size:15px;color:var(--ink);background:rgba(255,255,255,.08);border:1px solid var(--line);padding:6px 14px 6px 8px;border-radius:999px;cursor:pointer;min-height:42px}
 .acct:hover{border-color:var(--acc)}.acct .av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--acc);color:#2a0a12;font-size:15px;overflow:hidden}.acct .av img{width:100%;height:100%;object-fit:cover}
 .lbox{position:relative;width:min(420px,100%);max-height:92vh;overflow:auto;background:var(--ticket);color:var(--tink);border-radius:20px;padding:22px 22px 16px}
@@ -842,7 +843,7 @@ async function showDet(b,d){LASTDET.b=b;LASTDET.d=d;d.innerHTML='<p class="hint"
 
 /* ===== الإعلان الرسمي ===== */
 const pickVid=l=>{l=(l||[]).filter(v=>v.site==="YouTube"&&/Trailer|Teaser/.test(v.type)&&!/fan|concept|parody|reaction/i.test(v.name||""));const sc=v=>(v.official?10:0)+(v.type==="Trailer"?4:0)+(v.iso_639_1==="ar"?3:v.iso_639_1==="en"?1:0);return l.sort((a,b)=>sc(b)-sc(a))[0]};
-const vidFrame=k=>`<div class="vid"><iframe src="https://www.youtube-nocookie.com/embed/${k}?rel=0" title="الإعلان الرسمي" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div>`;
+const vidFrame=k=>`<div class="vid"><button class="yt" type="button" aria-label="تشغيل الإعلان الرسمي" data-k="${k}" style="background-image:url(https://i.ytimg.com/vi/${k}/hqdefault.jpg)"><span>▶</span></button></div>`;document.addEventListener("click",e=>{const b=e.target.closest(".yt");if(!b)return;b.outerHTML='<iframe src="https://www.youtube-nocookie.com/embed/'+b.dataset.k+'?rel=0&autoplay=1" title="الإعلان الرسمي" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>'});
 async function getVid(t,id){const r=await tm(`/${t}/${id}/videos`,{language:undefined,include_video_language:"ar,en,null"});return pickVid(r.results)}
 async function openTrailer(o){const x=ALL.find(y=>y.o===o);const m=$("#vm"),b=$("#vmb");m.hidden=false;b.innerHTML='<p class="hint">جاري تحميل الإعلان…</p>';
  try{let id=TMI[o]&&TMI[o][0];const t=x.k==="m"?"movie":"tv";if(!id){await look(o);id=LS.tm[o]&&LS.tm[o].id}if(!id)throw 0;const v=await getVid(t,id);
@@ -881,7 +882,9 @@ document.querySelector("[data-fk]").onclick=e=>{const b=e.target.closest(".opt")
 function fcard(x,open){const fm=FAM[x.f];return `<article class="ticket"><div class="t-main"><div class="t-kind">${KIND[x.k]} · ${ORG[x.org]} · ${x.y}</div><div class="t-title">${x.t}</div><div class="t-orig">${x.o}</div><p class="t-why">${x.why}</p><div class="chips"><span class="chip ${fm[1]}">${fm[0]}</span><span class="chip">${len(x)}</span></div>${extra(x)}${acts(x)}${gdet(x,open)}<button class="lk" data-like="${esc(x.o)}">أعمال تشبهه ←</button></div><div class="t-stub">${pimg(x)}${stub(x)}</div></article>`}
 function flist(){const l=ALL.filter(x=>(fkind==="a"||x.k===fkind)&&gv(x).every((v,i)=>fr[i]===0||(fr[i]===1?v<=1:v===0))&&!(W[x.o]||[]).some(k=>fwx.has(k)||(k==="sd2"&&fwx.has("sd"))))
  .sort((a,b)=>gv(a).reduce((s,v)=>s+v,0)-gv(b).reduce((s,v)=>s+v,0));
- $("#flist").innerHTML=`<div class="res-head"><h2>${l.length?l.length+" عمل يناسب بيتك":"ما في أعمال بهذه الشروط"}</h2></div>${l.length?`<div class="tickets">${l.map(x=>fcard(x,false)).join("")}</div>`:'<div class="empty">خفّف شرطًا واحدًا وجرّب مرة ثانية.</div>'}`}
+ const FN=24;let fn=FN;const more=()=>l.length>fn?`<p style="text-align:center;margin:18px 0 0"><button class="btn ghost" id="fmore" type="button">عرض المزيد (${l.length-fn} عمل)</button></p>`:"";
+ $("#flist").innerHTML=`<div class="res-head"><h2>${l.length?l.length+" عمل يناسب بيتك":"ما في أعمال بهذه الشروط"}</h2></div>${l.length?`<div class="tickets">${l.slice(0,fn).map(x=>fcard(x,false)).join("")}</div><div id="fmw">${more()}</div>`:'<div class="empty">خفّف شرطًا واحدًا وجرّب مرة ثانية.</div>'}`;
+ const wire=()=>{const b=$("#fmore");if(b)b.onclick=()=>{$("#flist .tickets").insertAdjacentHTML("beforeend",l.slice(fn,fn+FN).map(x=>fcard(x,false)).join(""));fn+=FN;$("#fmw").innerHTML=more();wire()}};wire()}
 function fone(){const q=$("#fq").value.trim(),x=findT(q);if(!q){$("#fone").innerHTML="";return}
  if(!x){$("#fone").innerHTML=`<div class="empty" style="margin-top:14px">ما لقينا "${esc(q)}" في قائمتنا الحالية.</div>`;return}
  const v=gv(x),mx=Math.max(...v);const verdictTxt=x.f===2?(mx===0?"✅ نظيف تمامًا ويناسب كل العائلة":"✅ يناسب كل العائلة، وفيه أشياء خفيفة"):x.f===1?"🟡 للمراهقين فما فوق؛ شوف التفاصيل قبل الأطفال":"🔴 للكبار فقط، لا يناسب الأطفال";
