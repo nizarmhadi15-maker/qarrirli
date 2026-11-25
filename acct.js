@@ -113,6 +113,13 @@ async function onUser(u) {
   ls.set("qr-acct", "1"); closeLogin();
   const google = (u.providerData || []).some(p => p.providerId === "google.com");
   window.QUV = google || u.emailVerified;
+  try {                                        // سجل خفيف للمسجّلين (يظهر للمدير في لوحة الإحصائيات)
+    const mk = "qr-mem-" + u.uid, today = new Date().toISOString().slice(0, 10), st = today + (window.QUV ? "v" : "n");
+    if (ls.get(mk) !== st) {
+      const { F, db } = fb;
+      F.setDoc(F.doc(db, "members", u.uid), { name: u.displayName || "", email: u.email || "", provider: google ? "google" : "email", verified: !!window.QUV, created: Date.parse(u.metadata && u.metadata.creationTime) || Date.now(), last: Date.now() }).then(() => ls.set(mk, st)).catch(() => {});
+    }
+  } catch {}
   if (!window.QUV) { window.qrRefresh && window.qrRefresh(); return; }   // لازم يأكد بريده قبل الحفظ على الحساب
   const { F, db } = fb, ref = F.doc(db, "users", u.uid);
   try {
