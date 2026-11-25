@@ -166,6 +166,13 @@ details.gs>:not(summary){margin-inline:16px}details.gs>.gdet,details.gs>p:last-c
 .gstep .gp{width:38px;height:57px;object-fit:cover;border-radius:6px;flex:none;background:var(--bg2)}
 .gstep .t{background:none;border:0;padding:0;color:var(--ink);font:inherit;text-align:start;cursor:pointer;flex:1}.gstep .t small{direction:rtl;text-align:start;color:var(--acc)}
 .gstep.done .t{text-decoration:line-through;opacity:.6}
+.tag{animation:tflo 3s ease-in-out infinite}.tag svg{overflow:visible;animation:tring 4s ease-in-out infinite;transform-origin:50% 10%}
+.tag .thand{transform-origin:12px 13px;transition:transform .09s linear}.tag b{display:inline-block;min-width:1.3em;text-align:center}
+.tag b.pop{animation:tpop .35s ease-out}
+@keyframes tflo{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes tring{0%,80%,100%{transform:rotate(0)}84%{transform:rotate(-18deg)}88%{transform:rotate(16deg)}92%{transform:rotate(-12deg)}96%{transform:rotate(8deg)}}
+@keyframes tpop{0%{transform:scale(1.6);opacity:.3}100%{transform:scale(1);opacity:1}}
+@media(prefers-reduced-motion:reduce){.tag,.tag svg{animation:none}}
 #daily{min-height:125px}#daily:not(:empty){min-height:0}
 .dl{display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--bg2);border:1px dashed var(--acc);border-radius:16px;padding:12px 16px;margin:0 0 18px}
 .dl b{font-family:Lalezar,serif;font-weight:400;font-size:24px}.dl small{color:var(--mute);display:block}
@@ -236,7 +243,7 @@ mask:radial-gradient(circle 10px at 88px 0,#0000 98%,#000) top/100% 51% no-repea
 <div class="wrap">
 <header>
   <a class="logo" href="./" aria-label="قرّرلي — الصفحة الرئيسية"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8 14h24l-3 22H11z" fill="#fff6ee"/><path d="M8 14h24l-.6 4H8.6z" fill="#ff5d73"/><path d="M14 14l1.5 22M20 14v22M26 14l-1.5 22" stroke="#ff5d73" stroke-width="2.4"/><circle cx="13" cy="10" r="4" fill="#fff6ee"/><circle cx="20" cy="8" r="5" fill="#fff6ee"/><circle cx="27" cy="10" r="4" fill="#fff6ee"/></svg>قرّرلي</a>
-  <div class="tag"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8" fill="none" stroke="#2a0a12" stroke-width="2.4"/><path d="M12 9v4l3 2M9 2h6" stroke="#2a0a12" stroke-width="2.4" stroke-linecap="round"/></svg>محتار؟ نقرّر عنك في <b>30</b> ثانية</div>
+  <div class="tag" id="tag30"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8" fill="none" stroke="#2a0a12" stroke-width="2.4"/><path d="M9 2h6" stroke="#2a0a12" stroke-width="2.4" stroke-linecap="round"/><path class="thand" d="M12 13V8" stroke="#2a0a12" stroke-width="2.4" stroke-linecap="round"/></svg>محتار؟ نقرّر عنك في <b id="t30">30</b> ثانية</div>
   <button class="acct" id="acct" type="button" aria-label="الحساب"><span class="av">👤</span><span class="an">دخول / تسجيل</span></button>
 </header>
 <nav class="tabs" aria-label="أقسام الموقع"><a href="#pick" data-v="pick">قرّرلي أنا</a><a href="#together" data-v="together">اختاروا معًا</a><a href="#like" data-v="like">أفلام تشبه…</a><a href="#family" data-v="family">دليل العائلة</a><a href="#new" data-v="new">🆕 جديد</a><a href="#explore" data-v="explore">رائج وبحث</a><a href="#guides" data-v="guides">ترتيب المشاهدة</a><a href="#mine" data-v="mine">قائمتي</a></nav>
@@ -858,6 +865,12 @@ async function xsearch(){const q=$("#xq").value.trim();if(!q)return;const g=$("#
  try{const r=await tm("/search/multi",{query:q});const l=r.results.filter(i=>i.media_type!=="person");$("#xh").textContent=l.length?`نتائج "${q}"`:`ما لقينا نتائج لـ "${q}"`;g.innerHTML=l.map(card).join("");fillProv(g);$("#xh").scrollIntoView({block:"start"})}catch(e){g.innerHTML='<div class="empty">تعذّر البحث الآن.</div>'}}
 $("#xgo").onclick=xsearch;$("#xq").addEventListener("keydown",e=>{if(e.key==="Enter")xsearch()});
 $("#xgrid").onclick=e=>{const b=e.target.closest(".pc");if(b)showDet(b,$("#xdet"))};
+
+/* ===== شارة العدّاد ===== */
+{const b=$("#t30"),h=document.querySelector("#tag30 .thand");if(b&&h&&!matchMedia("(prefers-reduced-motion: reduce)").matches){
+ const run=()=>{let v=30;const t=setInterval(()=>{v--;if(v>=0){b.textContent=v;h.style.transform=`rotate(${(30-v)*12}deg)`}else{clearInterval(t);b.textContent="✓";b.classList.remove("pop");void b.offsetWidth;b.classList.add("pop");
+  setTimeout(()=>{b.textContent="30";h.style.transition="none";h.style.transform="rotate(0)";void h.offsetWidth;h.style.transition="";setTimeout(run,4000)},1800)}},90)};
+ setTimeout(run,800)}}
 /* ===== البحث البارز في الواجهة ===== */
 {const hq=$("#hq"),hs=$("#hsug"),hr=$("#hres");let ht=0,hseq=0,hi=-1,hl=[];
  try{$("#hreg").textContent=CN[REG]||"بلدك"}catch(e){}
