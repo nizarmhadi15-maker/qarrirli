@@ -174,7 +174,20 @@ details.gs>:not(summary){margin-inline:16px}details.gs>.gdet,details.gs>p:last-c
 @keyframes tring{0%,80%,100%{transform:rotate(0)}84%{transform:rotate(-18deg)}88%{transform:rotate(16deg)}92%{transform:rotate(-12deg)}96%{transform:rotate(8deg)}}
 @keyframes tpop{0%{transform:scale(1.6);opacity:.3}100%{transform:scale(1);opacity:1}}
 @media(prefers-reduced-motion:reduce){.tag,.tag svg{animation:none}}
-#daily{min-height:125px}#daily:not(:empty){min-height:0}
+
+/* A سينمائية */
+.dA{position:relative;border-radius:22px;overflow:hidden;min-height:250px;display:flex;align-items:flex-end;border:1px solid rgba(255,209,102,.35);box-shadow:0 18px 40px rgba(0,0,0,.45)}
+.dA .bd{position:absolute;inset:0;background:#2a0a12 center/cover no-repeat;transform:scale(1.04);transition:transform 8s ease}.dA:hover .bd{transform:scale(1.12)}
+.dA:before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(270deg,rgba(26,5,11,.96) 0,rgba(26,5,11,.82) 45%,rgba(26,5,11,.25) 100%),linear-gradient(0deg,rgba(26,5,11,.9),transparent 60%)}
+.dA .in{position:relative;z-index:2;display:flex;gap:18px;align-items:flex-end;padding:20px;width:100%}
+.dA .po{width:120px;aspect-ratio:2/3;border-radius:12px;object-fit:cover;flex:none;box-shadow:0 10px 28px rgba(0,0,0,.6);border:2px solid rgba(255,255,255,.12)}
+.dA .rb{display:inline-flex;gap:6px;align-items:center;background:linear-gradient(135deg,#ffd166,#ff5d73);color:#2a0a12;font-weight:800;font-size:13px;border-radius:999px;padding:4px 12px;margin-bottom:8px}
+.dA h3{font-family:Lalezar,serif;font-weight:400;font-size:34px;line-height:1.1;margin:0 0 4px}.dA .og{color:var(--mute);font-size:14px;direction:ltr;text-align:right}
+.dch{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.dch span{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:3px 10px;font-size:13px}
+.dA p{margin:0 0 12px;max-width:520px}.dbt{display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:600px){.dA .po{width:92px}.dA h3{font-size:26px}.dA .in{padding:16px;gap:14px}}
+#daily .dA{margin:0 0 18px}#ddet:empty{display:none}#ddet{margin:-6px 0 22px}
+#daily{min-height:270px}#daily:not(:empty){min-height:0}
 .dl{display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--bg2);border:1px dashed var(--acc);border-radius:16px;padding:12px 16px;margin:0 0 18px}
 .dl b{font-family:Lalezar,serif;font-weight:400;font-size:24px}.dl small{color:var(--mute);display:block}
 .dl button{margin-inline-start:auto}
@@ -1064,8 +1077,11 @@ function guides(focus){const tot=g=>{const l=g.p.map(x=>x[0]);return[l.filter(t=
  if(focus){const el=$("#gs-"+focus);if(el)setTimeout(()=>el.scrollIntoView({block:"start",behavior:"smooth"}),60)}}
 /* ===== فيلم اليوم ===== */
 {const d=new Date(),k=d.getFullYear()*1000+Math.floor((d-new Date(d.getFullYear(),0,0))/864e5),DP=ALL.filter(y=>y.f>=1),x=DP[(k*7919)%DP.length];
- $("#daily").innerHTML=`<div class="dl"><div><small>🎬 ترشيح اليوم (${d.toLocaleDateString("ar",{day:"numeric",month:"long"})})</small><b>${x.t}</b><small>${KIND[x.k]} · ${ORG[x.org]} · ${len(x)}</small></div><button class="btn ghost" data-like="${esc(x.o)}" id="dlk">اعرض التذكرة</button></div>`;
- $("#dlk").onclick=()=>{sel.mood=x.md[0];paint();$("#out").innerHTML=`<div class="res-head"><h2>ترشيح اليوم</h2></div><div class="tickets">${ticket(x,0)}</div>`;shown=[x];$("#out").scrollIntoView({block:"start"})}}
+ const ti=TMI[x.o]||[],po=ti[2]?IMG+"w342/"+ti[2]:"",dt=d.toLocaleDateString("ar",{day:"numeric",month:"long"});
+ $("#daily").innerHTML=`<div class="dA"><div class="bd" id="dAbd"></div><div class="in">${po?`<img class="po" alt="${esc(x.t)}" src="${po}">`:""}<div><span class="rb">🎬 ترشيح اليوم · ${dt}</span><h3>${x.t}</h3><div class="og">${esc(x.o)} · ${x.y}</div><div class="dch"><span>${KIND[x.k]}</span><span>${ORG[x.org]}</span><span>${len(x)}</span><span>${FAM[x.f][0]}</span></div><p>${x.why}</p><div class="dbt"><button class="btn acc" id="dlk" type="button">🎟️ اعرض التذكرة</button>${ti[0]?`<button class="btn ghost" id="dlw" type="button">📺 وين أشوفه؟</button>`:""}</div></div></div></div><section id="ddet"></section>`;
+ $("#dlk").onclick=()=>{sel.mood=x.md[0];paint();$("#out").innerHTML=`<div class="res-head"><h2>ترشيح اليوم</h2></div><div class="tickets">${ticket(x,0)}</div>`;shown=[x];$("#out").scrollIntoView({block:"start"})};
+ const w=$("#dlw");if(w)w.onclick=()=>showDet({dataset:{t:ti[1]==="m"?"movie":"tv",id:String(ti[0])}},$("#ddet"));
+ if(ti[0])(async()=>{try{const r=await tm(`/${ti[1]==="m"?"movie":"tv"}/${ti[0]}`);if(r.backdrop_path)$("#dAbd").style.backgroundImage=`url(${IMG}w780${r.backdrop_path})`}catch(e){}})()}
 
 /* ===== التنقل ===== */
 function resetPick(){for(const k in sel)sel[k]=null;paint();save();out.innerHTML="";pool=[];shown=[];const hn=$("#hint");hn.textContent="اختر المزاج على الأقل، والباقي إذا حبيت.";hn.style.color=""}
