@@ -14,9 +14,19 @@ var isNew=false;try{if(localStorage.getItem("qr-seen")!==day){localStorage.setIt
 var dev=/iPad|Tablet/i.test(ua)?"tablet":/Mobi|Android|iPhone/i.test(ua)?"mobile":"desktop";
 var pg=location.pathname.replace(/^\/|\.html$/g,"").replace(/\//g,"_")||"home";if(pg==="index")pg="home";pg=pg.slice(0,80);
 var ref="direct";try{if(document.referrer){var h=new URL(document.referrer).hostname.replace(/^www\.|^m\.|^l\.|^lm\./,"");if(h!=="qarrirli.com"){ref=/google\./.test(h)?"google":/bing\./.test(h)?"bing":/facebook|fb\./.test(h)?"facebook":/instagram/.test(h)?"instagram":/^t\.co$|twitter|x\.com/.test(h)?"x":/youtube|youtu\.be/.test(h)?"youtube":/whatsapp|wa\.me/.test(h)?"whatsapp":/telegram|t\.me/.test(h)?"telegram":/tiktok/.test(h)?"tiktok":/yahoo|duckduckgo|yandex/.test(h)?"other-search":h.slice(0,40).replace(/[`.]/g,"_")}else ref=""}}catch(e){}
+try{var us=new URLSearchParams(location.search).get("utm_source");if(us&&ref!=="")ref=us.toLowerCase().replace(/[^a-z0-9_-]/g,"").slice(0,30)||ref}catch(e){}
 function inc(f){return{fieldPath:f,increment:{integerValue:"1"}}}
 var hr=String(new Date().getUTCHours());var ft=[inc("views"),inc("pages.`"+pg+"`"),inc("hours.`"+hr+"`")];
 if(isNew){ft.push(inc("visitors"),inc("vhours.`"+hr+"`"),inc("countries.`"+cc+"`"),inc("devices.`"+dev+"`"));if(ref)ft.push(inc("refs.`"+ref+"`"))}
-var body=JSON.stringify({writes:[{transform:{document:"projects/"+P+"/databases/(default)/documents/stats/"+day,fieldTransforms:ft}}]});
-fetch("https://firestore.googleapis.com/v1/projects/"+P+"/databases/(default)/documents:commit?key="+K,{method:"POST",headers:{"Content-Type":"application/json"},body:body,keepalive:true}).catch(function(){});
+var URL_C="https://firestore.googleapis.com/v1/projects/"+P+"/databases/(default)/documents:commit?key="+K;
+function send(ft){fetch(URL_C,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({writes:[{transform:{document:"projects/"+P+"/databases/(default)/documents/stats/"+day,fieldTransforms:ft}}]}),keepalive:true}).catch(function(){})}
+send(ft);
+/* زائر حقيقي: أول تفاعل فعلي (لمس/نقر/تمرير/كتابة) أو بقاء الصفحة ظاهرة 12 ثانية — الروبوتات نادرًا ما تفعل ذلك */
+var hk="qr-hum",done=false;try{if(localStorage.getItem(hk)===day)done=true}catch(e){}
+if(!done){var hum=function(){if(done)return;done=true;try{localStorage.setItem(hk,day)}catch(e){}
+  ["pointerdown","touchstart","keydown","scroll"].forEach(function(t){removeEventListener(t,hum,true)});
+  var f=[inc("humans"),inc("hcountries.`"+cc+"`"),inc("hdevices.`"+dev+"`"),inc("hrefs.`"+(ref||"internal")+"`")];send(f)};
+ ["pointerdown","touchstart","keydown"].forEach(function(t){addEventListener(t,hum,{capture:true,passive:true})});
+ addEventListener("scroll",function sc(){if(scrollY>120){removeEventListener("scroll",sc,true);hum()}},{capture:true,passive:true});
+ var vis=0,it=setInterval(function(){if(done){clearInterval(it);return}if(document.visibilityState==="visible"&&document.hasFocus&&document.hasFocus()){vis++;if(vis>=12){clearInterval(it);hum()}}},1000)}
 }catch(e){}})();
