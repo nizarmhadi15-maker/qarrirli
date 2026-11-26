@@ -1079,7 +1079,7 @@ function guides(focus){const tot=g=>{const l=g.p.map(x=>x[0]);return[l.filter(t=
 {const d=new Date(),k=d.getFullYear()*1000+Math.floor((d-new Date(d.getFullYear(),0,0))/864e5),DP=ALL.filter(y=>y.f>=1),x=DP[(k*7919)%DP.length];
  const ti=TMI[x.o]||[],po=ti[2]?IMG+"w342/"+ti[2]:"",dt=d.toLocaleDateString("ar",{day:"numeric",month:"long"});
  $("#daily").innerHTML=`<div class="dA"><div class="bd" id="dAbd"></div><div class="in">${po?`<img class="po" alt="${esc(x.t)}" src="${po}">`:""}<div><span class="rb">🎬 ترشيح اليوم · ${dt}</span><h3>${x.t}</h3><div class="og">${esc(x.o)} · ${x.y}</div><div class="dch"><span>${KIND[x.k]}</span><span>${ORG[x.org]}</span><span>${len(x)}</span><span>${FAM[x.f][0]}</span></div><p>${x.why}</p><div class="dbt"><button class="btn acc" id="dlk" type="button">🎟️ اعرض التذكرة</button>${ti[0]?`<button class="btn ghost" id="dlw" type="button">📺 وين أشوفه؟</button>`:""}</div></div></div></div><section id="ddet"></section>`;
- $("#dlk").onclick=()=>{sel.mood=x.md[0];paint();$("#out").innerHTML=`<div class="res-head"><h2>ترشيح اليوم</h2></div><div class="tickets">${ticket(x,0)}</div>`;shown=[x];$("#out").scrollIntoView({block:"start"})};
+ $("#dlk").onclick=()=>{const dd=$("#ddet");dd.innerHTML=`<div class="tickets">${ticket(x,0)}</div>`;shown=[x];dd.scrollIntoView({behavior:"smooth",block:"nearest"})};
  const w=$("#dlw");if(w)w.onclick=()=>showDet({dataset:{t:ti[1]==="m"?"movie":"tv",id:String(ti[0])}},$("#ddet"));
  if(ti[0])(async()=>{try{const r=await tm(`/${ti[1]==="m"?"movie":"tv"}/${ti[0]}`);if(r.backdrop_path)$("#dAbd").style.backgroundImage=`url(${IMG}w780${r.backdrop_path})`}catch(e){}})()}
 
