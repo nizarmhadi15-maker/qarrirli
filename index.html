@@ -186,7 +186,7 @@ details.gs>:not(summary){margin-inline:16px}details.gs>.gdet,details.gs>p:last-c
 .dch{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.dch span{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:3px 10px;font-size:13px}
 .dA p{margin:0 0 12px;max-width:520px}.dbt{display:flex;gap:8px;flex-wrap:wrap}
 @media(max-width:600px){.dA .po{width:92px}.dA h3{font-size:26px}.dA .in{padding:16px;gap:14px}}
-#daily .dA{margin:0 0 18px}#ddet:empty{display:none}#ddet{margin:-6px 0 22px}
+#daily .dA{margin:0 0 18px}#ddet[hidden]{display:none}#ddet{margin:-6px 0 22px}.ddbar{display:flex;justify-content:flex-end;margin:0 0 8px}.ddx{padding:6px 14px;font-size:14px}
 #daily{min-height:276px}@media(max-width:600px){#daily{min-height:398px}}#daily:not(:empty){min-height:0}
 .dl{display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--bg2);border:1px dashed var(--acc);border-radius:16px;padding:12px 16px;margin:0 0 18px}
 .dl b{font-family:Lalezar,serif;font-weight:400;font-size:24px}.dl small{color:var(--mute);display:block}
@@ -1078,15 +1078,17 @@ function guides(focus){const tot=g=>{const l=g.p.map(x=>x[0]);return[l.filter(t=
 /* ===== فيلم اليوم ===== */
 {const d=new Date(),k=d.getFullYear()*1000+Math.floor((d-new Date(d.getFullYear(),0,0))/864e5),DP=ALL.filter(y=>y.f>=1),x=DP[(k*7919)%DP.length];
  const ti=TMI[x.o]||[],po=ti[2]?IMG+"w342/"+ti[2]:"",dt=d.toLocaleDateString("ar",{day:"numeric",month:"long"});
- $("#daily").innerHTML=`<div class="dA"><div class="bd" id="dAbd"></div><div class="in">${po?`<img class="po" alt="${esc(x.t)}" src="${po}">`:""}<div><span class="rb">🎬 ترشيح اليوم · ${dt}</span><h3>${x.t}</h3><div class="og">${esc(x.o)} · ${x.y}</div><div class="dch"><span>${KIND[x.k]}</span><span>${ORG[x.org]}</span><span>${len(x)}</span><span>${FAM[x.f][0]}</span></div><p>${x.why}</p><div class="dbt"><button class="btn acc" id="dlk" type="button">🎟️ اعرض التذكرة</button>${ti[0]?`<button class="btn ghost" id="dlw" type="button">📺 وين أشوفه؟</button>`:""}</div></div></div></div><section id="ddet"></section>`;
- $("#dlk").onclick=()=>{const dd=$("#ddet");dd.innerHTML=`<div class="tickets">${ticket(x,0)}</div>`;shown=[x];dd.scrollIntoView({behavior:"smooth",block:"nearest"})};
- const w=$("#dlw");if(w)w.onclick=()=>showDet({dataset:{t:ti[1]==="m"?"movie":"tv",id:String(ti[0])}},$("#ddet"));
+ $("#daily").innerHTML=`<div class="dA"><div class="bd" id="dAbd"></div><div class="in">${po?`<img class="po" alt="${esc(x.t)}" src="${po}">`:""}<div><span class="rb">🎬 ترشيح اليوم · ${dt}</span><h3>${x.t}</h3><div class="og">${esc(x.o)} · ${x.y}</div><div class="dch"><span>${KIND[x.k]}</span><span>${ORG[x.org]}</span><span>${len(x)}</span><span>${FAM[x.f][0]}</span></div><p>${x.why}</p><div class="dbt"><button class="btn acc" id="dlk" type="button">🎟️ اعرض التذكرة</button>${ti[0]?`<button class="btn ghost" id="dlw" type="button">📺 وين أشوفه؟</button>`:""}</div></div></div></div><section id="ddet" hidden><div class="ddbar"><button class="btn ghost ddx" id="ddx" type="button">✕ إغلاق</button></div><div id="ddin"></div></section>`;
+ const dd=$("#ddet"),din=$("#ddin"),ddOpen=()=>{dd.hidden=false;setTimeout(()=>dd.scrollIntoView({behavior:"smooth",block:"nearest"}),60)};
+ $("#ddx").onclick=()=>{dd.hidden=true;din.innerHTML="";$("#daily").scrollIntoView({behavior:"smooth",block:"nearest"})};
+ $("#dlk").onclick=()=>{din.innerHTML=`<div class="tickets">${ticket(x,0)}</div>`;shown=[x];ddOpen()};
+ const w=$("#dlw");if(w)w.onclick=()=>{ddOpen();showDet({dataset:{t:ti[1]==="m"?"movie":"tv",id:String(ti[0])}},din)};
  if(ti[0])(async()=>{try{const r=await tm(`/${ti[1]==="m"?"movie":"tv"}/${ti[0]}`);if(r.backdrop_path)$("#dAbd").style.backgroundImage=`url(${IMG}w780${r.backdrop_path})`}catch(e){}})()}
 
 /* ===== التنقل ===== */
 function resetPick(){for(const k in sel)sel[k]=null;paint();save();out.innerHTML="";pool=[];shown=[];const hn=$("#hint");hn.textContent="اختر المزاج على الأقل، والباقي إذا حبيت.";hn.style.color=""}
 function goHome(e){e.preventDefault();resetPick();if(location.hash&&location.hash!=="#pick")location.hash="pick";else route();scrollTo({top:0,behavior:"smooth"})}
-$(".logo").addEventListener("click",goHome);
+$(".logo").addEventListener("click",e=>{e.preventDefault();try{localStorage.removeItem("ft-sel");sessionStorage.clear()}catch(_){}try{history.scrollRestoration="manual"}catch(_){}location.assign("/")});
 document.querySelector('nav.tabs a[data-v="pick"]').addEventListener("click",goHome);
 
 function route(){const hs=location.hash.slice(1);const rm=hs.match(/^room-(.+)$/);const gm=hs.match(/^guides-([a-z0-9-]+)$/);const v=rm||hs==="together"?"together":gm?"guides":["like","family","guides","mine","explore","new"].includes(hs)?hs:"pick";
