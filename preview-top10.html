@@ -271,7 +271,7 @@ details.gs>:not(summary){margin-inline:16px}details.gs>.gdet,details.gs>p:last-c
 mask:radial-gradient(circle 10px at 88px 0,#0000 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 10px at 88px 100%,#0000 98%,#000) bottom/100% 51% no-repeat}
 .t-title{font-size:23px}.t-stub b{font-size:26px}.t-main{padding:14px}}
 @media(prefers-reduced-motion:reduce){.ticket{animation:none}}
-.t10i.on img{outline:3px solid var(--acc);outline-offset:-3px}</style>
+.t10i.on img{outline:3px solid var(--acc);outline-offset:-3px}.dsk>div i{display:block;height:14px;margin:0 0 12px;border-radius:8px;background:linear-gradient(90deg,rgba(255,255,255,.06),rgba(255,255,255,.16),rgba(255,255,255,.06));background-size:200% 100%;animation:dsk 1s linear infinite}.dsk>div i.w{height:30px;width:60%}.dsk>div i.s{width:40%}.dsk-p{aspect-ratio:2/3;border-radius:12px;background:rgba(255,255,255,.08)}@keyframes dsk{to{background-position:-200% 0}}</style>
 <style id="pbgc">body{background-color:#1a050b!important;background-image:none!important}</style>
 </head>
 <body>
@@ -946,7 +946,7 @@ $("#xgrid").onclick=e=>{const b=e.target.closest(".pc");if(b)showDet(b,$("#xdet"
  const hy=it=>(it.release_date||it.first_air_date||"").slice(0,4),hk=it=>it.media_type||(it.title?"movie":"tv");
  const hclose=()=>{hs.hidden=true;hs.innerHTML="";hi=-1;hq.setAttribute("aria-expanded","false")};
  async function hopen(t,id){hclose();hr.innerHTML='<section id="hdet"></section>';const d=$("#hdet");await showDet({dataset:{t,id:String(id)}},d);
-  try{const r=await tm(`/${t}/${id}/recommendations`);const l=(r.results||[]).filter(x=>x.poster_path).slice(0,8);
+  try{const r=await tmc(`/${t}/${id}/recommendations`);const l=(r.results||[]).filter(x=>x.poster_path).slice(0,8);
    if(l.length&&$("#hdet")===d){d.insertAdjacentHTML("beforeend",`<div class="hsim"><h3>🔁 أعمال تشبهه</h3><div class="pgrid">${l.map(x=>card({...x,media_type:x.media_type||t})).join("")}</div></div>`);fillProv(d.querySelector(".hsim"))}}catch(e){}}
  hr.onclick=e=>{const b=e.target.closest(".pc");if(b){e.preventDefault();hopen(b.dataset.t,b.dataset.id)}};
  async function hsearch(q){q=(q||hq.value).trim();if(!q)return hq.focus();hclose();hr.innerHTML='<p class="hint">جاري البحث…</p>';
@@ -990,8 +990,13 @@ document.addEventListener("click",e=>{const rb=e.target.closest(".regb");if(!rb)
 const LASTDET={};
 const xacts=(t,it)=>{const k=t+"/"+it.id,v=(LS.x||{})[k]||{},meta=esc(JSON.stringify({n:it.title||it.name,p:it.poster_path||"",y:(it.release_date||it.first_air_date||"").slice(0,4),m:it.runtime||((it.number_of_episodes||0)*(((it.episode_run_time||[])[0])||45))}));
  return `<div class="acts"><button class="ab xb" data-xk="${k}" data-xa="later" data-meta="${meta}" aria-pressed="${!!v.later}">＋ سأشاهده لاحقًا</button><button class="ab xb" data-xk="${k}" data-xa="seen" data-meta="${meta}" aria-pressed="${!!v.seen}">✓ شاهدته</button></div>`};
-async function showDet(b,d){LASTDET.b=b;LASTDET.d=d;d.innerHTML='<p class="hint">جاري التحميل…</p>';
- try{const t=b.dataset.t,id=b.dataset.id;const[it,pv,vd]=await Promise.all([tm(`/${t}/${id}`),tm(`/${t}/${id}/watch/providers`,{language:undefined}).catch(()=>({})),getVid(t,id).catch(()=>null)]);
+const TMC=new Map();const tmc=(p,q)=>{const k=p+JSON.stringify(q||{});if(!TMC.has(k))TMC.set(k,tm(p,q).catch(e=>{TMC.delete(k);throw e}));return TMC.get(k)};
+const detAll=(t,id)=>tmc(`/${t}/${id}`,{append_to_response:"videos,watch/providers",include_video_language:"ar,en,null"});
+{let pfT=0;const pf=e=>{const b=e.target.closest&&e.target.closest("[data-t][data-id]");if(!b||!/^(movie|tv)$/.test(b.dataset.t))return;clearTimeout(pfT);const go=()=>detAll(b.dataset.t,b.dataset.id).catch(()=>{});e.type==="pointerover"?pfT=setTimeout(go,120):go()};
+ addEventListener("pointerover",pf,{passive:true});addEventListener("touchstart",pf,{passive:true});addEventListener("pointerdown",pf,{passive:true})}
+async function showDet(b,d){LASTDET.b=b;LASTDET.d=d;
+ {const im=document.querySelector(`[data-t="${b.dataset.t}"][data-id="${b.dataset.id}"] img`);d.innerHTML=`<article class="det dsk">${im?`<img alt="" src="${im.currentSrc||im.src}">`:"<div class='dsk-p'></div>"}<div><i></i><i class="w"></i><i></i><i></i><i class="s"></i></div></article>`}
+ try{const t=b.dataset.t,id=b.dataset.id;const it=await detAll(t,id),pv=it["watch/providers"]||{},vd=pickVid((it.videos||{}).results);
   const PI=pinfo(pv.results,t,it.release_date),flat=PI.flat,rent=PI.rent;
   const wt=window.QW?QW.name(it.original_title||it.original_name,it.title||it.name):(it.title||it.name),wl=((pv.results||{})[REG]||{}).link;
   const prov=l=>window.QW?l.map(p=>QW.btn(p,wt,wl,IMG)).join(""):l.map(p=>`<span><img alt="" src="${IMG}w92${p.logo_path}">${esc(p.provider_name)}</span>`).join("");
