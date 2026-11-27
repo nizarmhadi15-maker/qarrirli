@@ -1125,6 +1125,175 @@ function route(){const hs=location.hash.slice(1);const rm=hs.match(/^room-(.+)$/
  document.querySelectorAll(".view").forEach(m=>m.hidden=m.id!=="v-"+v);
  document.querySelectorAll("nav.tabs a").forEach(a=>{if(a.dataset.v===v)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
  if(v==="together"){if(rm&&ROOM.test(rm[1]))roomJoin(rm[1]);else if(!tg.innerHTML)setup()}}
+/* ===== مزايا المسجّلين (معاينة) ===== */
+(function(){
+const $=s=>document.querySelector(s), E=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const T=(p,q)=>(window.tmc?tmc(p,q):tm(p,q));
+const GM={35:"c",18:"e",10749:"e",28:"a",12:"a",10759:"a",10752:"a",9648:"m",80:"m",53:"m",27:"h",99:"i",36:"i",10751:"z",16:"z",10762:"z",14:"a",10765:"a",878:"m"};
+const LANG=l=>l==="ar"?"ar":l==="tr"?"tr":l==="ko"?"kr":l==="ja"?"an":"en";
+LS.ml=LS.ml||{};LS.tr=LS.tr||{};LS.av=LS.av||{};
+/* سجل المزاج من الأسئلة */
+document.addEventListener("click",e=>{if(e.target.closest("#go")&&typeof sel!=="undefined"&&sel.mood){LS.ml[sel.mood]=(LS.ml[sel.mood]||0)+1;saveLS()}},true);
+/* الفلتر العائلي الدائم: يطبّق على التذاكر */
+if(typeof build==="function"){const _b=build;build=function(){if(LS.famlock&&typeof sel!=="undefined"&&sel.who!=="fam"){const w=sel.who;sel.who="fam";try{return _b()}finally{sel.who=w}}return _b()}}
+/* قائمة مشتركة عبر الرابط */
+const SHK="qr-share-in";
+try{if(location.hash.startsWith("#share=")){sessionStorage.setItem(SHK,location.hash.slice(7));history.replaceState(null,"",location.pathname+"#mine")}}catch(e){}
+const enc=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+const dec=s=>JSON.parse(decodeURIComponent(escape(atob(s.replace(/-/g,"+").replace(/_/g,"/")))));
+const byO=o=>ALL.find(x=>x.o===o);
+const xitems=()=>Object.entries(LS.x||{});
+const nameOf=()=>{const U=window.QU;return U?(U.displayName||(U.email||"").split("@")[0]):"صديقك"};
+
+const css=`#mp{margin:22px 0 8px;display:grid;gap:16px}
+#mp .mpc{background:rgba(74,20,32,.85);border:1px solid rgba(255,93,115,.25);border-radius:22px;padding:18px 20px;backdrop-filter:blur(6px)}
+#mp h3{margin:0 0 4px;font-size:20px}#mp .sub{margin:0 0 12px;color:var(--mute);font-size:14px}
+#mp .new{display:inline-block;font-size:11px;font-weight:700;background:#ffd166;color:#2a0a12;border-radius:999px;padding:2px 9px;margin-inline-start:6px;vertical-align:middle}
+.mpal{display:flex;gap:12px;align-items:center;background:linear-gradient(135deg,rgba(255,209,102,.18),rgba(255,93,115,.18));border:1px solid rgba(255,209,102,.5);border-radius:16px;padding:10px 14px;margin:0 0 8px}
+.mpal img{width:42px;height:63px;border-radius:8px;object-fit:cover}.mpal b{display:block}.mpal small{color:var(--mute)}
+.mprow{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin}
+.mprow button{flex:none;width:118px;border:0;background:none;color:inherit;padding:0;cursor:pointer;text-align:center;font:inherit}
+.mprow img{width:118px;height:177px;border-radius:12px;object-fit:cover;display:block;box-shadow:0 8px 20px rgba(0,0,0,.4)}
+.mprow small{display:block;font-size:12px;margin-top:6px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mprow button.on img{outline:3px solid var(--acc)}
+.mptr{display:grid;gap:10px}.mptr .it{display:flex;gap:12px;align-items:center;background:rgba(0,0,0,.18);border-radius:14px;padding:10px}
+.mptr img{width:54px;height:81px;border-radius:9px;object-fit:cover}.mptr .nm{flex:1;min-width:0}.mptr .nm b{display:block}.mptr .nm small{color:var(--mute);font-size:13px}
+.stp{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border-radius:999px;padding:3px}
+.stp button{width:30px;height:30px;border-radius:50%;border:0;background:rgba(255,255,255,.1);color:inherit;font-size:18px;cursor:pointer}
+.stp span{min-width:62px;text-align:center;font-weight:700;font-size:14px}
+.mpbar{height:6px;border-radius:9px;background:rgba(255,255,255,.1);margin-top:6px;overflow:hidden}.mpbar i{display:block;height:100%;background:linear-gradient(90deg,#ffd166,#ff5d73)}
+.tog{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.sw{position:relative;width:54px;height:30px;flex:none}.sw input{opacity:0;width:0;height:0}.sw span{position:absolute;inset:0;border-radius:30px;background:rgba(255,255,255,.18);transition:.2s}
+.sw span:before{content:"";position:absolute;width:24px;height:24px;top:3px;right:3px;border-radius:50%;background:#fff;transition:.2s}.sw input:checked+span{background:var(--acc)}.sw input:checked+span:before{transform:translateX(-24px)}
+.wrapc{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:linear-gradient(135deg,#ff5d73,#ffd166);color:#2a0a12;border-radius:22px;padding:18px 22px}
+.wrapc b{font-family:Lalezar,serif;font-size:28px;font-weight:400}.wrapc .btn{background:#2a0a12;color:#fff6ee}
+#mpw{position:fixed;inset:0;z-index:80;background:rgba(10,0,4,.82);display:grid;place-items:center;padding:16px}
+#mpw .box{max-width:380px;width:100%;text-align:center}#mpw canvas{width:100%;border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+#mpw .row{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.shin{border:1px dashed rgba(255,209,102,.6)}
+#mpd:not(:empty){margin-top:14px}`;
+const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
+
+/* -------- مساعدات -------- */
+const tvItems=()=>xitems().filter(([k,v])=>k.startsWith("tv/")&&(v.seen||v.later));
+const seenX=()=>xitems().filter(([,v])=>v.seen);
+async function detailsOf(k){const[t,id]=k.split("/");try{return await T(`/${t}/${id}`,{append_to_response:"videos,watch/providers",include_video_language:"ar,en,null"})}catch(e){return null}}
+function provNames(d){const g=((d&&d["watch/providers"]||{}).results||{})[REG]||{};return [...(g.flatrate||[]),...(g.free||[]),...(g.ads||[])].map(p=>p.provider_name)}
+
+/* -------- 1) تعبئة الإحصائيات -------- */
+async function fillStats(){const kp=$("#ml .kp");if(!kp)return;const cells=kp.querySelectorAll("div");
+ const mc={...LS.ml},oc={};
+ for(const[k,v]of seenX().slice(0,12)){const d=await detailsOf(k);if(!d)continue;const w=v.r||3;(d.genres||[]).forEach(g=>{const m=GM[g.id];if(m)mc[m]=(mc[m]||0)+w});const o=LANG(d.original_language);oc[o]=(oc[o]||0)+1}
+ Object.keys(LS.seen||{}).map(byO).filter(Boolean).forEach(x=>{[...x.md].forEach(m=>mc[m]=(mc[m]||0)+(LS.rate[x.o]||3));oc[x.org]=(oc[x.org]||0)+1});
+ const tM=Object.entries(mc).sort((a,b)=>b[1]-a[1])[0],tO=Object.entries(oc).sort((a,b)=>b[1]-a[1])[0];
+ if(cells[3]&&tM)cells[3].querySelector("b").textContent=MOODS[tM[0]];if(cells[4]&&tO)cells[4].querySelector("b").textContent=ORG[tO[0]];
+ window.__mpTop={mood:tM&&MOODS[tM[0]],org:tO&&ORG[tO[0]]}}
+
+/* -------- 2) لك أنت -------- */
+async function forYou(box){const seeds=[...seenX().filter(([,v])=>(v.r||3)>=3).map(([k])=>k),
+  ...Object.keys(LS.seen||{}).filter(o=>(LS.rate[o]||3)>=3&&TMI[o]).map(o=>(TMI[o][1]==="m"?"movie/":"tv/")+TMI[o][0])].slice(0,4);
+ if(!seeds.length){box.innerHTML=`<p class="sub">علّم على أي عمل «✓ شاهدته» وقيّمه بالنجوم، وبنطلع لك هون ترشيحات على ذوقك.</p>`;return}
+ const have=new Set([...xitems().map(([k])=>k)]);const sc={},meta={},from={};
+ for(const k of seeds){const[t,id]=k.split("/");try{const r=await T(`/${t}/${id}/recommendations`);(r.results||[]).filter(x=>x.poster_path).forEach((x,i)=>{const kk=(x.media_type||t)+"/"+x.id;if(have.has(kk))return;sc[kk]=(sc[kk]||0)+(20-i);meta[kk]=x;from[kk]=from[kk]||k})}catch(e){}}
+ const top=Object.keys(sc).sort((a,b)=>sc[b]-sc[a]).slice(0,14);
+ const seedName=k=>{const v=(LS.x||{})[k];if(v)return v.n;const o=Object.keys(TMI).find(o=>(TMI[o][1]==="m"?"movie/":"tv/")+TMI[o][0]===k);return o?(byO(o)||{}).t||o:""};
+ box.querySelector(".sub").innerHTML=`لأنك شاهدت <b>${E(seedName(seeds[0]))}</b>${seeds.length>1?" وغيره":""}، هاي أعمال بتشبه ذوقك.`;
+ box.querySelector(".mprow").innerHTML=top.map(k=>{const x=meta[k];return `<button type="button" data-k="${k}" title="${E(x.title||x.name)}"><img alt="" loading="lazy" src="${IMG}w185${x.poster_path}"><small>${E(x.title||x.name)}</small></button>`}).join("")||'<p class="sub">ما لقينا ترشيحات كافية بعد.</p>';
+ let cur=null;box.querySelector(".mprow").onclick=e=>{const b=e.target.closest("button");if(!b)return;const d=$("#mpd");
+  if(cur===b.dataset.k&&d.innerHTML){d.innerHTML="";cur=null;b.classList.remove("on");return}
+  cur=b.dataset.k;box.querySelectorAll(".mprow button").forEach(x=>x.classList.toggle("on",x===b));const[t,id]=cur.split("/");
+  d.innerHTML='<div class="ddbar"><button class="btn ghost ddx" type="button" id="mpx">✕ إغلاق</button></div><section id="mpdi"></section>';
+  $("#mpx").onclick=()=>{d.innerHTML="";cur=null;b.classList.remove("on")};showDet({dataset:{t,id}},$("#mpdi"))}}
+
+/* -------- 3) تتبّع الحلقات + تنبيهات -------- */
+async function tracker(box,alerts){const L=tvItems();if(!L.length){box.innerHTML+=`<p class="sub">أضف أي مسلسل لقائمتك وبتقدر تتابع هون وين وصلت.</p>`;return}
+ const wrap=document.createElement("div");wrap.className="mptr";box.appendChild(wrap);
+ for(const[k,v]of L){const d=await detailsOf(k);if(!d)continue;const seas=(d.seasons||[]).filter(s=>s.season_number>0);
+  const p=LS.tr[k]||(v.seen?{s:seas.length||1,e:(seas[seas.length-1]||{}).episode_count||1}:{s:1,e:0});
+  const it=document.createElement("div");it.className="it";
+  const draw=()=>{const ss=seas.find(s=>s.season_number===p.s)||{episode_count:0};const tot=seas.reduce((a,s)=>a+(s.episode_count||0),0),done=seas.filter(s=>s.season_number<p.s).reduce((a,s)=>a+(s.episode_count||0),0)+p.e;
+   const nx=d.next_episode_to_air,le=d.last_episode_to_air;
+   const behind=le&&(le.season_number>p.s||(le.season_number===p.s&&le.episode_number>p.e));
+   it.innerHTML=`<img alt="" src="${IMG}w154${d.poster_path||v.p}"><div class="nm"><b>${E(d.name||v.n)}</b>
+   <small>${behind?`🆕 في حلقات ما شفتها — آخر حلقة نزلت: م${le.season_number} ح${le.episode_number}`:nx?`⏳ الحلقة الجاية ${E(fdate(nx.air_date))}`:d.status==="Ended"?"✅ المسلسل مكتمل":"لا جديد حاليًا"}</small>
+   <div class="mpbar"><i style="width:${tot?Math.min(100,Math.round(done/tot*100)):0}%"></i></div></div>
+   <div style="display:grid;gap:6px;justify-items:center"><div class="stp"><button data-a="s-" aria-label="الموسم السابق">‹</button><span>موسم ${p.s}</span><button data-a="s+" aria-label="الموسم التالي">›</button></div>
+   <div class="stp"><button data-a="e-" aria-label="حلقة أقل">−</button><span>حلقة ${p.e}/${ss.episode_count||"?"}</span><button data-a="e+" aria-label="حلقة أكثر">+</button></div></div>`;
+   if(behind&&!alerts.querySelector(`[data-k="${k}"]`))alerts.insertAdjacentHTML("beforeend",`<div class="mpal" data-k="${k}"><img alt="" src="${IMG}w92${d.poster_path||v.p}"><div><b>🆕 حلقات جديدة من ${E(d.name||v.n)}</b><small>وقفت عند م${p.s} ح${p.e}، وآخر حلقة نزلت م${le.season_number} ح${le.episode_number}.</small></div></div>`)};
+  it.onclick=e=>{const b=e.target.closest("[data-a]");if(!b)return;const a=b.dataset.a,ss=seas.find(s=>s.season_number===p.s)||{episode_count:99};
+   if(a==="e+")p.e<ss.episode_count?p.e++:(seas.find(s=>s.season_number===p.s+1)&&(p.s++,p.e=1));
+   if(a==="e-")p.e>0&&p.e--;if(a==="s+"&&seas.find(s=>s.season_number===p.s+1)){p.s++;p.e=0}if(a==="s-"&&p.s>1){p.s--;p.e=(seas.find(s=>s.season_number===p.s)||{}).episode_count||0}
+   LS.tr[k]={...p};saveLS();draw()};
+  draw();wrap.appendChild(it)}}
+
+async function availAlerts(alerts,box){const L=[...xitems().filter(([,v])=>v.later&&!v.seen).map(([k,v])=>[k,v]),
+  ...Object.keys(LS.later||{}).filter(o=>TMI[o]).map(o=>[(TMI[o][1]==="m"?"movie/":"tv/")+TMI[o][0],{n:(byO(o)||{}).t||o,p:"/"+TMI[o][2]}])];
+ if(!L.length){box.innerHTML+=`<p class="sub">أضف أعمال لـ«سأشاهده لاحقًا»، وأول ما يصير أي واحد منها متوفر بباقة في ${E(CN[REG]||"بلدك")} بنبلّغك هون.</p>`;return}
+ const rows=[];for(const[k,v]of L.slice(0,12)){const d=await detailsOf(k);if(!d)continue;const now=provNames(d),was=LS.av[k];
+  if(was&&!was.length&&now.length)alerts.insertAdjacentHTML("afterbegin",`<div class="mpal"><img alt="" src="${IMG}w92${d.poster_path||v.p}"><div><b>🎉 صار متوفر: ${E(d.title||d.name||v.n)}</b><small>نزل على ${E(now.join("، "))} في ${E(CN[REG]||"")}.</small></div></div>`);
+  LS.av[k]=now;rows.push(`<div class="it"><img alt="" src="${IMG}w154${d.poster_path||v.p}"><div class="nm"><b>${E(d.title||d.name||v.n)}</b><small>${now.length?"✅ متوفر الآن على "+E(now.slice(0,3).join("، ")):"⏳ مش متوفر بباقة حاليًا — بنبلّغك أول ما ينزل"}</small></div></div>`)}
+ saveLS();box.insertAdjacentHTML("beforeend",`<div class="mptr">${rows.join("")}</div>`)}
+
+/* -------- 4) ملخّص سنتك -------- */
+async function wrapped(){const y=new Date().getFullYear(),U=window.QU;
+ const sx=seenX(),sl=Object.keys(LS.seen||{}).map(byO).filter(Boolean);
+ const nM=sx.filter(([k])=>k.startsWith("movie")).length+sl.filter(x=>x.k==="m").length,nS=sx.length+sl.length-nM;
+ const mins=sx.reduce((t,[,v])=>t+(v.m||0),0)+sl.reduce((t,x)=>t+(x.k==="m"?x.n:(x.n||x.s*10)*45),0);
+ const best=[...sx.map(([k,v])=>({n:v.n,p:v.p,r:v.r||0,t:v.seen})),...sl.filter(x=>TMI[x.o]).map(x=>({n:x.t,p:"/"+TMI[x.o][2],r:LS.rate[x.o]||0,t:LS.seen[x.o]}))].sort((a,b)=>b.r-a.r||b.t-a.t)[0];
+ const top=window.__mpTop||{};
+ const c=document.createElement("canvas");c.width=1080;c.height=1920;const g=c.getContext("2d");
+ try{await document.fonts.load("120px Lalezar");await document.fonts.load("700 40px 'IBM Plex Sans Arabic'")}catch(e){}
+ const bg=g.createLinearGradient(0,0,1080,1920);bg.addColorStop(0,"#4a1420");bg.addColorStop(.55,"#2a0a12");bg.addColorStop(1,"#1a050b");g.fillStyle=bg;g.fillRect(0,0,1080,1920);
+ const gl=g.createRadialGradient(540,520,40,540,520,700);gl.addColorStop(0,"rgba(255,93,115,.45)");gl.addColorStop(1,"rgba(255,93,115,0)");g.fillStyle=gl;g.fillRect(0,0,1080,1920);
+ g.direction="rtl";g.textAlign="center";g.fillStyle="#ffd166";g.font="700 44px 'IBM Plex Sans Arabic'";g.fillText("🍿 قرّرلي",540,120);
+ g.fillStyle="#fff6ee";g.font="110px Lalezar";g.fillText(`سنتي بالأفلام ${y}`,540,270);
+ g.font="700 46px 'IBM Plex Sans Arabic'";g.fillStyle="#ffd9de";g.fillText(U?(U.displayName||"").split(" ")[0]||"":"",540,345);
+ let yy=420;if(best&&best.p){try{const im=new Image();im.crossOrigin="anonymous";im.src=IMG+"w500"+best.p;await im.decode();
+  g.save();const w=360,h=540,x=540-w/2;g.shadowColor="rgba(0,0,0,.6)";g.shadowBlur=60;g.beginPath();g.roundRect(x,yy,w,h,30);g.clip();g.drawImage(im,x,yy,w,h);g.restore();
+  g.fillStyle="#ffd166";g.font="700 38px 'IBM Plex Sans Arabic'";g.fillText("⭐ الأفضل عندي: "+best.n,540,yy+h+70);yy+=h+110}catch(e){yy+=20}}
+ const box=(x,yv,val,lab)=>{g.fillStyle="rgba(255,255,255,.08)";g.beginPath();g.roundRect(x,yv,300,230,28);g.fill();g.fillStyle="#fff6ee";g.font="110px Lalezar";g.fillText(val,x+150,yv+130);g.fillStyle="#ffd9de";g.font="700 34px 'IBM Plex Sans Arabic'";g.fillText(lab,x+150,yv+190)};
+ box(720,yy,String(nM),"فيلم");box(390,yy,String(nS),"مسلسل");box(60,yy,String(Math.round(mins/60)),"ساعة مشاهدة");yy+=290;
+ g.fillStyle="#fff6ee";g.font="700 48px 'IBM Plex Sans Arabic'";if(top.mood)g.fillText("مزاجي المفضّل: "+top.mood,540,yy+40);if(top.org)g.fillText("أكثر شي بشوفه: "+top.org,540,yy+120);
+ g.fillStyle="#ff5d73";g.beginPath();g.roundRect(240,1730,600,110,55);g.fill();g.fillStyle="#2a0a12";g.font="700 50px 'IBM Plex Sans Arabic'";g.direction="ltr";g.fillText("qarrirli.com",540,1802);
+ const m=document.createElement("div");m.id="mpw";m.innerHTML=`<div class="box"><div class="row" style="margin:0 0 10px"><b style="font-size:20px">ملخّص سنتك جاهز 🎉</b></div><div id="mpcv"></div><div class="row"><button class="btn acc" id="mpsh">📤 شارك على الستوري</button><button class="btn ghost" id="mpdl">⬇️ حمّل الصورة</button><button class="btn ghost" id="mpcl">إغلاق</button></div></div>`;
+ document.body.appendChild(m);$("#mpcv").appendChild(c);const close=()=>m.remove();$("#mpcl").onclick=close;m.onclick=e=>{if(e.target===m)close()};
+ const blob=()=>new Promise(r=>{try{c.toBlob(r,"image/png")}catch(e){r(null)}});
+ $("#mpdl").onclick=async()=>{const b=await blob();if(!b)return alert("تعذّر حفظ الصورة");const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=`qarrirli-${y}.png`;a.click()};
+ $("#mpsh").onclick=async()=>{const b=await blob();if(b&&navigator.canShare&&navigator.canShare({files:[new File([b],"q.png",{type:"image/png"})]})){try{await navigator.share({files:[new File([b],`qarrirli-${y}.png`,{type:"image/png"})],text:"ملخّص سنتي بالأفلام من قرّرلي 🍿 qarrirli.com"})}catch(e){}}else $("#mpdl").click()}}
+
+/* -------- 5) قائمة مشتركة -------- */
+function shareBox(box){const items=[...xitems().filter(([,v])=>v.later&&!v.seen).map(([k,v])=>({k,n:v.n,p:v.p,y:v.y})),...Object.keys(LS.later||{}).map(o=>({o}))].slice(0,40);
+ box.insertAdjacentHTML("beforeend",`<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn acc" id="mpshl" ${items.length?"":"disabled"}>🔗 انسخ رابط قائمتي</button><small id="mpshm" style="align-self:center;color:var(--mute)">${items.length?items.length+" عمل بـ«سأشاهده لاحقًا»":"قائمة «لاحقًا» فاضية"}</small></div>`);
+ const b=box.querySelector("#mpshl");if(b)b.onclick=async()=>{const url=location.origin+location.pathname+"#share="+enc({by:nameOf(),i:items});
+  try{if(navigator.share)await navigator.share({title:"قائمتي على قرّرلي",text:`هاي قائمة الأفلام اللي ناوي أشوفها 🍿`,url});else{await navigator.clipboard.writeText(url);$("#mpshm").textContent="✅ انسخ الرابط وابعته لصاحبك أو للعيلة"}}catch(e){try{await navigator.clipboard.writeText(url);$("#mpshm").textContent="✅ انسخ الرابط"}catch(_){prompt("انسخ الرابط:",url)}}}}
+function sharedIn(){let s;try{s=sessionStorage.getItem(SHK)}catch(e){}if(!s)return "";let d;try{d=dec(s)}catch(e){return ""}
+ const L=d.i||[];const cards=L.map(it=>{if(it.o){const x=byO(it.o);if(!x||!TMI[x.o])return "";return `<button type="button"><img alt="" src="${IMG}w185/${TMI[x.o][2]}"><small>${E(x.t)}</small></button>`}
+  return `<button type="button"><img alt="" src="${IMG}w185${it.p}"><small>${E(it.n)}</small></button>`}).join("");
+ setTimeout(()=>{const a=$("#mpadd");if(a)a.onclick=()=>{L.forEach(it=>{if(it.o){LS.later[it.o]=LS.later[it.o]||Date.now()}else if(it.k){LS.x[it.k]=LS.x[it.k]||{n:it.n,p:it.p,y:it.y,later:Date.now()}}});saveLS();try{sessionStorage.removeItem(SHK)}catch(e){}mine()};
+  const z=$("#mpskip");if(z)z.onclick=()=>{try{sessionStorage.removeItem(SHK)}catch(e){}mine()}},0);
+ return `<div class="mpc shin"><h3>📋 قائمة ${E(d.by||"صديقك")}</h3><p class="sub">بعتلك ${L.length} عمل ناوي يشوفهم. ضيفهم لقائمتك وبتلاقوا شي تشوفوه سوا.</p><div class="mprow">${cards}</div>
+ <div style="display:flex;gap:8px;margin-top:12px"><button class="btn acc" id="mpadd">＋ أضفهم لقائمتي</button><button class="btn ghost" id="mpskip">لا شكرًا</button></div></div>`}
+
+/* -------- التركيب داخل «قائمتي» -------- */
+async function plus(){const ml=$("#ml");if(!ml||$("#mp"))return;const kp=ml.querySelector(".kp");if(!kp)return;
+ const U=window.QU,y=new Date().getFullYear();
+ const html=`<div id="mp">${sharedIn()}
+  <div id="mpa"></div>
+  <div class="wrapc"><div><b>🎬 ملخّص سنتك ${y}</b><br><small>صورة جاهزة للستوري: كم فيلم شفت، ساعاتك، ومزاجك المفضّل.</small></div><button class="btn" id="mpwb">اعمل ملخّصي</button></div>
+  <div class="mpc" id="mpf"><h3>✨ لك أنت <span class="new">جديد</span></h3><p class="sub">جاري تجهيز ترشيحاتك…</p><div class="mprow"></div><div id="mpd"></div></div>
+  <div class="mpc" id="mpt"><h3>📺 مسلسلات بتتابعها <span class="new">جديد</span></h3><p class="sub">حرّك الحلقة وبنتذكر وين وقفت، وبنبلّغك لما تنزل حلقات جديدة.</p></div>
+  <div class="mpc" id="mpv"><h3>🔔 تنبيه «صار متوفر» <span class="new">جديد</span></h3><p class="sub">أعمال «سأشاهده لاحقًا» ووين صارت متوفرة في ${E(CN[REG]||"بلدك")}.</p></div>
+  <div class="mpc" id="mps"><h3>👨‍👩‍👧 قائمة مشتركة <span class="new">جديد</span></h3><p class="sub">ابعت قائمتك لشريكك أو لعيلتك أو لصحابك، وهم بيضيفوها لقائمتهم بكبسة.</p></div>
+  <div class="mpc"><div class="tog"><div><h3>👪 الفلتر العائلي دائمًا <span class="new">جديد</span></h3><p class="sub" style="margin:0">كل التذاكر اللي بنطبعها لك بتكون مناسبة للعائلة، حتى لو ما اخترت «مع العائلة».</p></div>
+  <label class="sw"><input type="checkbox" id="mpfam" ${LS.famlock?"checked":""}><span></span></label></div></div>
+  ${U?"":`<p class="sub" style="text-align:center">🔒 هاي المزايا محفوظة على هالجهاز. <b>سجّل مجانًا</b> لتنحفظ على كل أجهزتك.</p>`}</div>`;
+ kp.insertAdjacentHTML("afterend",html);
+ $("#mpwb").onclick=wrapped;$("#mpfam").onchange=e=>{LS.famlock=e.target.checked;saveLS()};
+ shareBox($("#mps"));
+ const al=$("#mpa");fillStats();forYou($("#mpf"));tracker($("#mpt"),al);availAlerts(al,$("#mpv"))}
+if(typeof mine==="function"){const _m=mine;mine=function(){const r=_m.apply(this,arguments);try{plus()}catch(e){console.error(e)}return r}}
+})();
+
 addEventListener("hashchange",route);route();
 }
 </script>
