@@ -271,7 +271,7 @@ details.gs>:not(summary){margin-inline:16px}details.gs>.gdet,details.gs>p:last-c
 mask:radial-gradient(circle 10px at 88px 0,#0000 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 10px at 88px 100%,#0000 98%,#000) bottom/100% 51% no-repeat}
 .t-title{font-size:23px}.t-stub b{font-size:26px}.t-main{padding:14px}}
 @media(prefers-reduced-motion:reduce){.ticket{animation:none}}
-</style>
+.t10i.on img{outline:3px solid var(--acc);outline-offset:-3px}</style>
 <style id="pbgc">body{background-color:#1a050b!important;background-image:none!important}</style>
 </head>
 <body>
@@ -921,8 +921,8 @@ $("#xgrid").onclick=e=>{const b=e.target.closest(".pc");if(b)showDet(b,$("#xdet"
 }
 
 /* ===== معاينة: المنصات + أفضل 10 ===== */
-{const tD=$("#t10d"),tIn=$("#t10in");$("#t10x").onclick=()=>{tD.hidden=true;tIn.innerHTML=""};
- const open=(t,id)=>{tD.hidden=false;showDet({dataset:{t,id:String(id)}},tIn);setTimeout(()=>tD.scrollIntoView({behavior:"smooth",block:"start"}),80)};
+{const tD=$("#t10d"),tIn=$("#t10in");let tcur=null;const tShut=()=>{tD.hidden=true;tIn.innerHTML="";tcur=null;document.querySelectorAll(".t10i.on").forEach(b=>b.classList.remove("on"))};$("#t10x").onclick=tShut;
+ const open=(t,id)=>{const key=t+":"+id;if(tcur===key&&!tD.hidden)return tShut();tcur=key;document.querySelectorAll(".t10i").forEach(b=>b.classList.toggle("on",b.dataset.t+":"+b.dataset.id===key));tD.hidden=false;showDet({dataset:{t,id:String(id)}},tIn);setTimeout(()=>tD.scrollIntoView({behavior:"smooth",block:"start"}),80)};
 
  const row=(el,L,t)=>{const one=L.slice(0,10).map((x,i)=>`<button class="t10i" type="button" data-t="${t}" data-id="${x.id}" title="${esc(x.title||x.name||"")}"><span class="t10n">${i+1}</span><img alt="${esc(x.title||x.name||"")}" loading="lazy" src="${IMG}w342${x.poster_path}"></button>`).join("");
   el.innerHTML=`<div class="t10k">${one}${one.replace(/<button /g,'<button tabindex="-1" aria-hidden="true" ')}</div>`;const k=el.firstChild,w=el.parentElement;

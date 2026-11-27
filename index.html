@@ -153,7 +153,7 @@ details.fg[open] summary{margin-bottom:6px}
 .hrow{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;min-height:166px;scrollbar-width:thin}
 .hrow button{flex:0 0 92px;background:none;border:0;padding:0;cursor:pointer;color:var(--ink);font:inherit;font-size:12.5px;text-align:center}
 .hrow img,.hrow i{width:92px;height:138px;object-fit:cover;border-radius:10px;display:block;margin-bottom:4px;background:var(--bg2)}.hrow span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.hrow button:hover img{outline:2px solid var(--acc)}
+.hrow button:hover img,.hrow button.on img{outline:2px solid var(--acc)}
 .hsim h3{margin:22px 0 10px;font-size:19px}.hoth{margin:22px 0 10px;font-size:17px;color:var(--mute)}
 #hres:empty{display:none}#hres{margin:-8px 0 26px}
 @media(max-width:560px){.hero2{padding:18px 12px 12px}.hsr input{font-size:16px;padding:12px 14px}.hsr .btn{padding:10px 14px}}
@@ -901,14 +901,17 @@ $("#xgrid").onclick=e=>{const b=e.target.closest(".pc");if(b)showDet(b,$("#xdet"
  try{$("#hreg").textContent=CN[REG]||"بلدك"}catch(e){}
  const hy=it=>(it.release_date||it.first_air_date||"").slice(0,4),hk=it=>it.media_type||(it.title?"movie":"tv");
  const hclose=()=>{hs.hidden=true;hs.innerHTML="";hi=-1;hq.setAttribute("aria-expanded","false")};
- async function hopen(t,id){hclose();hr.innerHTML='<section id="hdet"></section>';const d=$("#hdet");await showDet({dataset:{t,id:String(id)}},d);
+ let hcur=null;const hshut=()=>{hr.innerHTML="";hcur=null;document.querySelectorAll("#htrend button.on").forEach(b=>b.classList.remove("on"))};
+ async function hopen(t,id,force){hclose();const key=t+":"+id;if(!force&&hcur===key&&hr.innerHTML){hshut();return}hcur=key;
+  document.querySelectorAll("#htrend button").forEach(b=>b.classList.toggle("on",b.dataset.t+":"+b.dataset.id===key));
+  hr.innerHTML='<div class="ddbar"><button class="btn ghost ddx" type="button" id="hrx">✕ إغلاق</button></div><section id="hdet"></section>';$("#hrx").onclick=()=>{hshut();$("#hf").scrollIntoView({behavior:"smooth",block:"center"})};const d=$("#hdet");await showDet({dataset:{t,id:String(id)}},d);
   try{const r=await tm(`/${t}/${id}/recommendations`);const l=(r.results||[]).filter(x=>x.poster_path).slice(0,8);
    if(l.length&&$("#hdet")===d){d.insertAdjacentHTML("beforeend",`<div class="hsim"><h3>🔁 أعمال تشبهه</h3><div class="pgrid">${l.map(x=>card({...x,media_type:x.media_type||t})).join("")}</div></div>`);fillProv(d.querySelector(".hsim"))}}catch(e){}}
- hr.onclick=e=>{const b=e.target.closest(".pc");if(b){e.preventDefault();hopen(b.dataset.t,b.dataset.id)}};
+ hr.onclick=e=>{const b=e.target.closest(".pc");if(b){e.preventDefault();hopen(b.dataset.t,b.dataset.id,true)}};
  async function hsearch(q){q=(q||hq.value).trim();if(!q)return hq.focus();hclose();hr.innerHTML='<p class="hint">جاري البحث…</p>';
   try{const r=await tm("/search/multi",{query:q});const l=r.results.filter(i=>i.media_type!=="person");
    if(!l.length){hr.innerHTML=`<div class="empty">ما لقينا "${esc(q)}". جرّب تكتب الاسم بالإنجليزي أو بطريقة ثانية.</div>`;return}
-   await hopen(l[0].media_type,l[0].id);const rest=l.slice(1,13);
+   await hopen(l[0].media_type,l[0].id,true);const rest=l.slice(1,13);
    if(rest.length){hr.insertAdjacentHTML("beforeend",`<h3 class="hoth">مش هذا اللي بتدوّر عليه؟</h3><div class="pgrid" id="hoth">${rest.map(card).join("")}</div>`);fillProv($("#hoth"))}}
   catch(e){hr.innerHTML='<div class="empty">تعذّر البحث الآن، جرّب بعد قليل.</div>'}}
  $("#hf").onsubmit=e=>{e.preventDefault();if(hi>=0&&hl[hi]){const x=hl[hi];hq.value=x.title||x.name;hopen(hk(x),x.id)}else hsearch()};
@@ -1100,9 +1103,10 @@ function guides(focus){const tot=g=>{const l=g.p.map(x=>x[0]);return[l.filter(t=
  const ti=TMI[x.o]||[],po=ti[2]?IMG+"w342/"+ti[2]:"",dt=d.toLocaleDateString("ar",{day:"numeric",month:"long"});
  $("#daily").innerHTML=`<div class="dA"><div class="bd" id="dAbd"></div><div class="in">${po?`<img class="po" alt="${esc(x.t)}" src="${po}">`:""}<div><span class="rb">🎬 ترشيح اليوم · ${dt}</span><h3>${x.t}</h3><div class="og">${esc(x.o)} · ${x.y}</div><div class="dch"><span>${KIND[x.k]}</span><span>${ORG[x.org]}</span><span>${len(x)}</span><span>${FAM[x.f][0]}</span></div><p>${x.why}</p><div class="dbt"><button class="btn acc" id="dlk" type="button">🎟️ اعرض التذكرة</button>${ti[0]?`<button class="btn ghost" id="dlw" type="button">📺 وين أشوفه؟</button>`:""}</div></div></div></div><section id="ddet" hidden><div class="ddbar"><button class="btn ghost ddx" id="ddx" type="button">✕ إغلاق</button></div><div id="ddin"></div></section>`;
  const dd=$("#ddet"),din=$("#ddin"),ddOpen=()=>{dd.hidden=false;setTimeout(()=>dd.scrollIntoView({behavior:"smooth",block:"nearest"}),60)};
- $("#ddx").onclick=()=>{dd.hidden=true;din.innerHTML="";$("#daily").scrollIntoView({behavior:"smooth",block:"nearest"})};
- $("#dlk").onclick=()=>{din.innerHTML=`<div class="tickets">${ticket(x,0)}</div>`;shown=[x];ddOpen()};
- const w=$("#dlw");if(w)w.onclick=()=>{ddOpen();showDet({dataset:{t:ti[1]==="m"?"movie":"tv",id:String(ti[0])}},din)};
+
+ let ddm=null;const ddShut=()=>{dd.hidden=true;din.innerHTML="";ddm=null};$("#ddx").onclick=()=>{ddShut();$("#daily").scrollIntoView({behavior:"smooth",block:"nearest"})};
+ $("#dlk").onclick=()=>{if(ddm==="t"&&!dd.hidden)return ddShut();ddm="t";din.innerHTML=`<div class="tickets">${ticket(x,0)}</div>`;shown=[x];ddOpen()};
+ const w=$("#dlw");if(w)w.onclick=()=>{if(ddm==="w"&&!dd.hidden)return ddShut();ddm="w";ddOpen();showDet({dataset:{t:ti[1]==="m"?"movie":"tv",id:String(ti[0])}},din)};
  if(ti[0])(async()=>{try{const r=await tm(`/${ti[1]==="m"?"movie":"tv"}/${ti[0]}`);if(r.backdrop_path)$("#dAbd").style.backgroundImage=`url(${IMG}w780${r.backdrop_path})`}catch(e){}})()}
 
 /* ===== التنقل ===== */
