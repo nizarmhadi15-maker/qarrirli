@@ -325,6 +325,7 @@ mask:radial-gradient(circle 10px at 88px 0,#0000 98%,#000) top/100% 51% no-repea
 <section class="pvs" aria-label="المنصات">
   <p class="pvt">📺 المنصات المتوفرة في <b id="pvreg">بلدك</b> — اضغط على منصة لتشوف الأشهر عليها</p>
   <div class="pvl" id="pvl"></div>
+  <div id="pvres" style="text-align:start;margin-top:14px"></div>
 </section>
 <section class="t10" aria-label="أفضل 10 أفلام هذا الأسبوع"><div class="t10h"><h2>🎬 أفضل 10 أفلام هذا الأسبوع</h2><p>الأكثر رواجًا هالأسبوع، واضغط لتعرف وين تشوفه</p></div><div class="t10w"><div class="t10r" id="t10m"></div></div></section>
 <section class="t10" aria-label="أفضل 10 مسلسلات هذا الأسبوع"><div class="t10h"><h2>📺 أفضل 10 مسلسلات هذا الأسبوع</h2><p>المسلسلات الأكثر رواجًا ووين تنعرض</p></div><div class="t10w"><div class="t10r" id="t10s"></div></div></section>
@@ -933,7 +934,7 @@ $("#xgrid").onclick=e=>{const b=e.target.closest(".pc");if(b)showDet(b,$("#xdet"
  (async()=>{try{const[m,s]=await Promise.all([tm("/trending/movie/week"),tm("/trending/tv/week")]);row($("#t10m"),m.results.filter(x=>x.poster_path),"movie");row($("#t10s"),s.results.filter(x=>x.poster_path),"tv")}catch(e){}})();
  (async()=>{try{const r=await tm("/watch/providers/movie",{watch_region:REG});const P=(r.results||[]).filter(p=>p.logo_path).sort((a,b)=>((a.display_priorities||{})[REG]??a.display_priority)-((b.display_priorities||{})[REG]??b.display_priority)).slice(0,14);
   const pl=$("#pvl");pl.innerHTML=P.map(p=>`<button type="button" data-p="${p.provider_id}" title="${esc(p.provider_name)}" aria-label="${esc(p.provider_name)}" aria-pressed="false"><img alt="" loading="lazy" src="${IMG}w92${p.logo_path}"></button>`).join("");
-  pl.onclick=async e=>{const b=e.target.closest("button");if(!b)return;pl.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));const hr=$("#hres");hr.innerHTML='<p class="hint">جاري التحميل…</p>';
+  pl.onclick=async e=>{const b=e.target.closest("button");if(!b)return;pl.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));const hr=$("#pvres");hr.innerHTML='<p class="hint">جاري التحميل…</p>';
    try{const q={watch_region:REG,with_watch_providers:b.dataset.p,sort_by:"popularity.desc"},[mm,ss]=await Promise.all([tm("/discover/movie",q),tm("/discover/tv",q)]);
     const L=[...mm.results.slice(0,10).map(x=>({...x,media_type:"movie"})),...ss.results.slice(0,10).map(x=>({...x,media_type:"tv"}))].filter(x=>x.poster_path).sort((a,b)=>b.popularity-a.popularity);
     hr.innerHTML=`<div class="res-head"><h2>الأشهر على ${esc(b.title)} في ${esc(CN[REG]||"بلدك")}</h2></div><div class="pgrid" id="pvg">${L.map(card).join("")}</div>`;fillProv($("#pvg"));hr.scrollIntoView({behavior:"smooth",block:"start"})}catch(_){hr.innerHTML='<div class="empty">تعذّر التحميل الآن.</div>'}}}catch(e){}})()}
